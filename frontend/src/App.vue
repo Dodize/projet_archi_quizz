@@ -1,30 +1,46 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="text">BLA blabla</div>
+  <div class="w-36">
+    <div class="grid grid-cols-3">
+    <img
+      class="h-12"
+      src="./media/img/heart.png "
+      alt="Heart representing first life" />
+      <img
+      class="h-12"
+      src="./media/img/heart.png "
+      alt="Heart representing second life" />
+      <img
+      class="h-12"
+      src="./media/img/heart.png "
+      alt="Heart representing third life" />
+    <p>Ceci est un test</p>
   </div>
-  <HelloWorld msg="Vite + Vue" />
+  </div>
+  
 </template>
 
+<script setup>
+import axios from 'axios';
+  const category = "music"
+  axios.get('https://the-trivia-api.com/v2/questions')
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.error('Error fetching trivia questions:', error);
+  });
+
+</script>
+
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.hearts {
+  max-width: 2%;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+.text {
+  font-family: 'Caveat', cursive;
+
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+
 </style>
