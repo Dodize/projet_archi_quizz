@@ -2,5 +2,5 @@
 projet 2A archi web
 
 # Lancer le front :
-npm i
+npm i <br>
 npx vite
