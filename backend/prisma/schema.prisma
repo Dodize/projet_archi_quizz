@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../quizz.db"
+}
+
+model Joueur {
+  id            Int      @id @default(autoincrement())
+  username      String
+  password      String
+  mail          String
+  argent        Int
+  partiesJouees Partie[]
+}
+
+model Partie {
+  id       Int    @id @default(autoincrement())
+  joueurId Int
+  joueur   Joueur @relation(fields: [joueurId], references: [id])
+}
