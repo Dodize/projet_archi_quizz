@@ -14,22 +14,23 @@
       class="h-12"
       src="./media/img/heart.png "
       alt="Heart representing third life" />
-    <p>Ceci est un test</p>
+    <p>{{ question }}</p>
   </div>
   </div>
   
 </template>
 
-<script setup>
-import axios from 'axios';
-  const category = "music"
-  axios.get('https://the-trivia-api.com/v2/questions')
-  .then(response => {
-    console.log(response.data);
-  })
-  .catch(error => {
-    console.error('Error fetching trivia questions:', error);
-  });
+<script async setup>
+  import axios from 'axios';
+  import { ref, onMounted } from "vue"
+
+  let question = ref("");
+
+  onMounted(async () => {
+    const response = await axios.get('https://the-trivia-api.com/v2/questions');
+    question.value = response.data[0].question.text;
+})
+
 
 </script>
 
@@ -44,3 +45,5 @@ import axios from 'axios';
 }
 
 </style>
+
+
