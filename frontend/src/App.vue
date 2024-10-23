@@ -1,16 +1,13 @@
 <template>
-    <div class="w-36">
-    <div class="grid grid-cols-3">
-      <img class="h-12 max-w-16" src="./media/img/heart.png " alt="Heart representing first life" />
-      <img class="h-12 max-w-16" src="./media/img/heart.png " alt="Heart representing second life" />
-      <img class="h-12 max-w-16" src="./media/img/heart.png " alt="Heart representing third life" />
-
-    </div>
+<div class="w-36">
+  <div class="grid grid-cols-3">
+    <img v-for="(index) in 3" :key="index" :src="getHeartImage(index)" class="h-12" alt="Heart"/>
   </div>
+</div>
   <div class="flex justify-center">
   
   <div class="question_reponses w-128">
-    <h1 class="text-center mb-4 mt-0">{{ categorie }}</h1>
+    <h1 class="text-center mb-6 mt-0 text-7xl font-normal">{{ categorie }}</h1>
     <p v-html="question" class="text-center mb-4"></p>
     <ul class="">
       <li v-for="(reponse, index) in reponses" :key="index" class="flex justify-center">
@@ -25,7 +22,12 @@
     ))"
   :disabled="afficherReponseBool === true" 
   v-html="reponse">
-</button>
+  </button>
+
+  <!-- check sign
+  <svg :class="afficherReponseBool === false || afficherReponseBool && correctAnswerIndex !== index ? 'hidden' : '' " xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+  </svg> -->
 
 
 
@@ -58,7 +60,7 @@ const categorieId = 17;
 const nbQuestionsParAPI = 10; //nombre de tirages de questions a chaque appel API
 const nbQuestionsQuizz = 15; //nombre de questions au total dans le quizz
 
-let question = ref("");
+const question = ref("");
 const reponses = ref([]);
 const categorie = ref("Science") //TODO : dynamique !
 
@@ -68,6 +70,13 @@ let questionEnCours = 0;
 let correctAnswerIndex; // l'index du bouton contenant la bonne reponse
 let afficherReponseBool = ref(false);
 let mauvaiseReponseCliqueeIndex = ref(null);
+
+const heartsRemaining = ref(3); //nombre de coeur au début de la partie
+
+const getHeartImage = (index) => {
+  console.log(heartsRemaining.value)
+  return index <= heartsRemaining.value ? '/img/full_heart.png' : '/img/empty_heart.png';
+};
 
 onMounted(async () => {
   const responseAPI = await axios.get('https://opentdb.com/api.php?amount=' + nbQuestionsParAPI + '&category=' + categorieId);
@@ -81,6 +90,7 @@ const afficherReponse = (selectedReponse, index) => {
     console.log("YES")
   } else {
     mauvaiseReponseCliqueeIndex.value = index;
+    heartsRemaining.value -= 1;
   }
   afficherReponseBool.value = true;
   console.log(correctAnswerIndex)
@@ -92,6 +102,9 @@ const questionSuivante = () => {
   if (questionEnCours < nbQuestionsQuizz - 1) {
     questionEnCours += 1;
     if (questionsList.length == questionEnCours) {
+      //on efface en attendant le chargement
+      question.value = null;
+      reponses.value = null;
       //on charge les 10 questions suivantes
       getQuestions();
     } else {
@@ -123,7 +136,17 @@ function majQuestion() {
 
   reponses.value = incorrectAnswers;
   //Tirer au sort le placement de la question correcte
-  correctAnswerIndex = Math.floor(Math.random() * (incorrectAnswers.length + 1));
+  if(correctAnswer == "True") {
+    //on place true en premiere position
+    correctAnswerIndex = 0;
+  } else if (correctAnswer == "False") {
+    //on place false en deuxieme position
+    correctAnswerIndex = 1;
+  } else {
+    //placement aléatoire
+    correctAnswerIndex = Math.floor(Math.random() * (incorrectAnswers.length + 1));
+  }
+  
   reponses.value.splice(correctAnswerIndex, 0, correctAnswer);
   console.log(correctAnswer); //TODO : penser a enlever
 }
@@ -133,20 +156,10 @@ function majQuestion() {
 </script>
 
 <style scoped>
-.hearts {
-  max-width: 2%;
-}
-
-.text {
-  font-family: 'Caveat', cursive;
-}
 
 h1 {
   font-family: "Cabin Sketch", cursive;
-  font-size: 70px; /* Larger than "Navbars" */
-  font-weight: 400;
   line-height: 1.2;
-  margin-bottom: 24px;
   color: #333;
 }
 
