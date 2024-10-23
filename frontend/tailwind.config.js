@@ -8,6 +8,17 @@ export default {
     extend: {
       spacing: {
         '128': '40rem',
+      },
+      colors: {
+        customRed: '#b85042',
+        customBlue: {
+          DEFAULT: '#1671D7',
+          hover: '#1a82e2',
+        }
+      },
+      borderWidth: {
+        DEFAULT: '1px',
+        '2e': '0.2em'
       }
     },
   },
