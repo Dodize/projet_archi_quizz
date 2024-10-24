@@ -91,7 +91,7 @@ const heartsRemaining = ref(3); //nombre de coeur au début de la partie
 
 const getHeartImage = (index) => {
   console.log(heartsRemaining.value)
-  return index <= heartsRemaining.value ? '/img/full_heart.png' : '/img/empty_heart.png';
+  return index <= heartsRemaining.value ? '/img/full_heart.png' : '/img/transparent_empty_heart.png';
 };
 
 onMounted(async () => {
@@ -179,10 +179,17 @@ h1 {
   text-shadow: 5px 6px 15px rgba(0, 0, 0, 0.3);
 }
 .content {
-  background: linear-gradient(135deg, #89CFF0, #9B59B6);
+  /* background: linear-gradient(135deg, #89CFF0, #9B59B6); */
   min-height: 100vh;
   font-size: 20px;
     color: #34495e;
+    background: 
+    linear-gradient(135deg, #89CFF0, #9B59B6), /* Gradient background */
+    linear-gradient(to right, rgba(255, 255, 255, 0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+  background-size: cover, 30px 30px, 30px 30px; /* Ensure both horizontal and vertical grids are sized */
+  background-blend-mode: overlay;
+
 }
 
 .quiz-box {
@@ -190,7 +197,7 @@ h1 {
       padding: 30px;
       border-radius: 15px;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-      width: 50rem;
+      width: 60vw;
       text-align: center;
     }
 
