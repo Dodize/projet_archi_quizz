@@ -12,9 +12,11 @@ export default {
       colors: {
         customRed: '#b85042',
         customBlue: {
-          DEFAULT: '#1671D7',
-          hover: '#1a82e2',
-        }
+          300: '#34495e',
+          button: '#1671D7',
+          hover: '#1a82e2'
+        },
+        boxGrey: 'rgba(255, 255, 255, 0.7)'
       },
       borderWidth: {
         DEFAULT: '1px',
