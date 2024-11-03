@@ -1,13 +1,22 @@
 <template>
-  <div class="content p-4 min-h-screen text-xl text-customBlue-300">
-    <div class="w-36">
+  <div class="content p-4 min-h-screen text-xl text-customBlue-300 grid grid-cols-[1fr_5fr]">
+    <!-- Affichage des coeurs -->
+    <div class="w-36 ml-2.5">
       <div class="grid grid-cols-3">
         <img v-for="(index) in 3" :key="index" :src="getHeartImage(index)" class="h-12" alt="Heart" />
       </div>
+      <div class="test flex items-center  bg-boxGrey w-36 border-amber-500 rounded-lg m-5 ml-0">
+        <img src="/img/piece-de-monnaie.png" class="h-12" alt="Coin" /> 
+        <div class="flex justify-center w-full">
+          <p class="ml-2">0</p>
+        </div>
+        
     </div>
-    <div class="flex justify-center ">
+    </div>
 
-      <div class="quiz-box bg-boxGrey p-7 pb-4 rounded-2xl w-3/5 text-center shadow-2xl">
+    <!-- Contenu "quizz box" -->
+    <div class="flex">
+      <div class="overflow-y-auto mt-2.5 bg-boxGrey p-7 pb-4 rounded-2xl w-4/5 text-center shadow-2xl h-128">
         <h1 class="text-center mb-6 mt-0 text-5xl font-extrabold">{{ categorie }}</h1>
         <p v-html="question" class="text-center mb-2"></p>
         <ul class="">
@@ -31,11 +40,9 @@
     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
   </svg> -->
 
-
-
           </li>
-
         </ul>
+        <!-- Bouton next -->
         <div class="flex justify-end">
           <button type="button" @click="questionSuivante"
             class="rounded-full w-32 ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -50,13 +57,8 @@
         </div>
 
       </div>
-
-
-
-
     </div>
-
-
+    <!-- ICI -->
   </div>
 </template>
 
@@ -97,14 +99,11 @@ onMounted(async () => {
 })
 
 const afficherReponse = (selectedReponse, index) => {
-  if (questionsList[questionEnCours].correct_answer == selectedReponse) {
-    console.log("YES")
-  } else {
+  if (questionsList[questionEnCours].correct_answer != selectedReponse) {
     mauvaiseReponseCliqueeIndex.value = index;
     heartsRemaining.value -= 1;
   }
   afficherReponseBool.value = true;
-  console.log(correctAnswerIndex)
 }
 
 const questionSuivante = () => {
@@ -172,19 +171,16 @@ h1 {
 }
 
 .content {
+  /* construction du theme du background */
   background:
     linear-gradient(135deg, #89CFF0, #9B59B6),
-    /* Gradient background */
     linear-gradient(to right, rgba(255, 255, 255, 0.2) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
-  background-size: cover, 30px 30px, 30px 30px;
-  /* Ensure both horizontal and vertical grids are sized */
-  background-blend-mode: overlay;
+    background-size: cover, 30px 30px, 30px 30px;
+    background-blend-mode: overlay;
 }
 
-.quiz-box {
-  max-height: 530px; /* Adjust as needed */
-  overflow-y: scoll;
+.test {
+  background-color: rgb(255 237 197 / 61%)
 }
-
 </style>

@@ -6,8 +6,8 @@ export default {
   ],
   theme: {
     extend: {
-      spacing: {
-        '128': '40rem',
+      height: {
+        '128': '33rem',
       },
       colors: {
         customRed: '#b85042',
