@@ -1,10 +1,4 @@
 <template>
-  <div>
-    <h2>Bienvenue dans le jeu !</h2>
-    <p>Catégorie : {{ category }}</p>
-    <p>Difficulté : {{ difficulty }}</p>
-    <p>Nombre de questions : {{ nbQuestions }}</p>
-  </div>
   <div class="grid grid-cols-[1fr_5fr]">
     <!-- Affichage des coeurs -->
     <div class="w-36 ml-2.5">
@@ -23,7 +17,7 @@
     <!-- Contenu "quizz box" -->
     <div class="flex">
       <div class="overflow-y-auto mt-2.5 bg-boxGrey p-7 pb-4 rounded-2xl w-4/5 text-center shadow-2xl h-128">
-        <h1 class="text-center mb-6 mt-0 text-5xl font-extrabold">{{ categorie }}</h1>
+        <h1 class="text-center mb-6 mt-0 text-5xl font-extrabold">{{ categoryName }}</h1>
         <p v-html="question" class="text-center mb-2"></p>
         <ul class="">
           <li v-for="(reponse, index) in reponses" :key="index" class="flex justify-center">
@@ -70,26 +64,23 @@
 
 <script async setup>
 import axios from 'axios';
-import { ref, onMounted } from "vue"
-
-import { defineProps } from 'vue';
+import { ref, onMounted, defineProps } from "vue"
 
 const props = defineProps({
-  category: String,
+  categoryId: String,
+  categoryName: String,
   difficulty: String,
   nbQuestions: [String, Number],
 });
 
-//TODO : parametres a brancher avec Elodie
-const categorieId = 17;
+//Parametres de la partie
+const categorieId = props.categoryId;
+const difficulteChoisie = props.difficulty;
+const nbQuestionsQuizz = props.nbQuestions;
 const nbQuestionsParAPI = 10; //nombre de tirages de questions a chaque appel API
-const nbQuestionsQuizz = 15; //nombre de questions au total dans le quizz
-
-const progressWidth = ref(50);
 
 const question = ref("");
 const reponses = ref([]);
-const categorie = ref("Science") //TODO : dynamique !
 
 let questionsList;
 let questionEnCours = 0;
@@ -106,9 +97,8 @@ const getHeartImage = (index) => {
 };
 
 onMounted(async () => {
-  const responseAPI = await axios.get('https://opentdb.com/api.php?amount=' + nbQuestionsParAPI + '&category=' + categorieId);
+  const responseAPI = await axios.get('https://opentdb.com/api.php?amount=' + nbQuestionsParAPI + '&category=' + categorieId + '&difficulty=' + difficulteChoisie);
   questionsList = responseAPI.data.results;
-
   majQuestion();
 })
 
