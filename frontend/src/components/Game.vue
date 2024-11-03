@@ -5,7 +5,7 @@
     <p>Difficulté : {{ difficulty }}</p>
     <p>Nombre de questions : {{ nbQuestions }}</p>
   </div>
-  <div class="content p-4 min-h-screen text-xl text-customBlue-300 grid grid-cols-[1fr_5fr]">
+  <div class="grid grid-cols-[1fr_5fr]">
     <!-- Affichage des coeurs -->
     <div class="w-36 ml-2.5">
       <div class="grid grid-cols-3">
@@ -184,15 +184,7 @@ h1 {
   text-shadow: 5px 6px 15px rgba(0, 0, 0, 0.3);
 }
 
-.content {
-  /* construction du theme du background */
-  background:
-    linear-gradient(135deg, #89CFF0, #9B59B6),
-    linear-gradient(to right, rgba(255, 255, 255, 0.2) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
-    background-size: cover, 30px 30px, 30px 30px;
-    background-blend-mode: overlay;
-}
+
 
 .test {
   background-color: rgb(255 237 197 / 61%)
