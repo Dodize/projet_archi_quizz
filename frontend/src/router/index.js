@@ -1,21 +1,30 @@
+// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
+import SelectionMenu from '../components/SelectionnerMenu.vue';
+import Game from '../components/Game.vue';
 import Connexion from '../components/Connexion.vue';
 
 const routes = [
   {
     path: '/',
-    redirect: '/connexion'
+    name: 'SelectionMenu',
+    component: SelectionMenu,
   },
   {
-    path: '/connexion',
-    name: 'Connexion',
-    component: Connexion
-  }
+    path: '/game',
+    name: 'Game',
+    component: Game,
+    props: route => ({
+      category: route.query.category,
+      difficulty: route.query.difficulty,
+      nbQuestions: route.query.nbQuestions,
+    }),
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 });
 
 export default router;

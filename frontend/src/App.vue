@@ -4,6 +4,10 @@
   </div>
 </template>
 
+<script setup>
+// Aucune logique spécifique ici
+</script>
+
 <style>
 .content {
   /* construction du theme du background */
