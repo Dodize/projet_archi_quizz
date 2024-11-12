@@ -1,10 +1,17 @@
 <template>
-  <div>
-    <h2>Bienvenue dans le jeu !</h2>
-    <p>Catégorie : {{ category }}</p>
-    <p>Difficulté : {{ difficulty }}</p>
-    <p>Nombre de questions : {{ nbQuestions }}</p>
-  </div>
+  <div class="relative">
+
+    <!-- Avatar + username ou "Login" selon si connecté -->
+    <div @click="ouvrirCompte"
+          class="cursor-pointer transition-all hover:scale-110 hover:shadow-lg absolute top-3 right-4 flex items-center bg-boxGrey w-36 border-amber-500 rounded-lg p-2 space-x-2">
+      <img 
+        src="/img/panda.png" 
+        alt="Icône" 
+        class="h-10 w-10"/>
+      <p class="text-sm font-semibold text-gray-700">Username</p>
+    </div>
+
+<!-- coeur sur vous -->
   <div class="grid grid-cols-[1fr_5fr]">
     <!-- Affichage des coeurs -->
     <div class="w-36 ml-2.5">
@@ -66,13 +73,17 @@
     </div>
     <!-- ICI -->
   </div>
+</div>
 </template>
 
 <script async setup>
 import axios from 'axios';
 import { ref, onMounted } from "vue"
-
+import { useRouter } from 'vue-router';
 import { defineProps } from 'vue';
+
+// Variables globales
+const router = useRouter();
 
 const props = defineProps({
   category: String,
@@ -103,6 +114,12 @@ const heartsRemaining = ref(3); //nombre de coeur au début de la partie
 const getHeartImage = (index) => {
   console.log(heartsRemaining.value)
   return index <= heartsRemaining.value ? '/img/full_heart.png' : '/img/transparent_empty_heart.png';
+};
+
+// Action pour aller sur la page de connexion (pour l'instant
+// TODO : connexion si pas connecté, infos du compte si connecté
+const ouvrirCompte = () => {
+  router.push('/connection');
 };
 
 onMounted(async () => {

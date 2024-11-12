@@ -20,6 +20,11 @@ const routes = [
       nbQuestions: route.query.nbQuestions,
     }),
   },
+  {
+    path: '/connection',
+    name: 'Connection',
+    component: Connexion,
+  }
 ];
 
 const router = createRouter({

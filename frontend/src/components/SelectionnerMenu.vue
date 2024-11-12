@@ -1,4 +1,15 @@
 <template>
+
+  <!-- Avatar + username ou "Login" selon si connecté -->
+  <div @click="ouvrirCompte"
+          class="cursor-pointer transition-all hover:scale-110 hover:shadow-lg absolute top-3 right-4 flex items-center bg-boxGrey w-36 border-amber-500 rounded-lg p-2 space-x-2">
+      <img 
+        src="/img/panda.png" 
+        alt="Icône" 
+        class="h-10 w-10"/>
+      <p class="text-sm font-semibold text-gray-700">Username</p>
+  </div>
+
     <!-- Boucle sur les catégories -->
     <h1 class="text-center mb-6 mt-0 text-2xl font-extrabold">Catégories</h1>
     <div v-if="categories.length" class="flex flex-wrap justify-center gap-4 text-center">
@@ -89,7 +100,13 @@
   const activeCategory = ref(null);    // Garde la catégorie sélectionnée
   const activeDifficulty = ref(null);  // Garde la difficulté sélectionnée
   const activeNbQuestions = ref(null); // Garde le nombre de questions sélectionné
-  
+
+  // Action pour aller sur la page de connexion (pour l'instant
+  // TODO : connexion si pas connecté, infos du compte si connecté
+  const ouvrirCompte = () => {
+    router.push('/connection');
+  };
+
   // Fonction pour charger les catégories
   const fetchCategories = async () => {
     try {
