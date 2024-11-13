@@ -5,13 +5,13 @@
       <div class="grid grid-cols-3">
         <img v-for="(index) in 3" :key="index" :src="getHeartImage(index)" class="h-12" alt="Heart" />
       </div>
-      <div class="test flex items-center  bg-boxGrey w-36 border-amber-500 rounded-lg m-5 ml-0">
-        <img src="/img/piece-de-monnaie.png" class="h-12" alt="Coin" /> 
+    <!-- Affichage des pièces-indices -->
+      <div class="flex items-center  bg-transparentRed w-36 border-amber-500 rounded-lg m-5 ml-0">
+        <img src="/img/piece-de-monnaie.png" class="h-12" alt="Coin" />
         <div class="flex justify-center w-full">
-          <p class="ml-2">0</p>
+          <p class="ml-2" v-html="piecesIndice"></p>
         </div>
-        
-    </div>
+      </div>
     </div>
 
     <!-- Contenu "quizz box" -->
@@ -19,6 +19,8 @@
       <div class="overflow-y-auto mt-2.5 bg-boxGrey p-7 pb-4 rounded-2xl w-4/5 text-center shadow-2xl h-128">
         <h1 class="text-center mb-6 mt-0 text-5xl font-extrabold">{{ categoryName }}</h1>
         <p v-html="question" class="text-center mb-2"></p>
+
+        <!-- Reponses -->
         <ul class="">
           <li v-for="(reponse, index) in reponses" :key="index" class="flex justify-center">
             <button type="button" @click="afficherReponse(reponse, index)"
@@ -26,39 +28,70 @@
               :class="{
                 'bg-green-500 border-green-500': correctAnswerIndex === index && afficherReponseBool,
                 'bg-red-500 border-red-500': mauvaiseReponseCliqueeIndex === index && afficherReponseBool,
-                'bg-[#B0B0B0] border-[#B0B0B0]': afficherReponseBool && index !== correctAnswerIndex && index !== mauvaiseReponseCliqueeIndex,
-                'cursor-pointer transition-all hover:scale-110 hover:shadow-lg': !afficherReponseBool,
-                'bg-[#007bff] border-white': index === 0 && !afficherReponseBool,
-                'bg-[#ff1493] border-white': index === 1 && !afficherReponseBool && reponses.length == 4,
-                'bg-[#ff6700] border-white': index === 2 && !afficherReponseBool,
-                'bg-[#32cd32] border-white': (index === 3 || (index === 1 && reponses.length == 2)) && !afficherReponseBool,
-              }" :disabled="afficherReponseBool === true" v-html="reponse">
+                'bg-[#B0B0B0] border-[#B0B0B0]': (afficherReponseBool && index !== correctAnswerIndex && index !== mauvaiseReponseCliqueeIndex) || reponsesRetireesIndex.includes(index),
+                'cursor-pointer transition-all hover:scale-110 hover:shadow-lg': !afficherReponseBool && !(reponsesRetireesIndex.includes(index)),
+                'bg-[#007bff] border-white': index === 0 && !afficherReponseBool && !(reponsesRetireesIndex.includes(index)),
+                'bg-[#ff1493] border-white': index === 1 && !afficherReponseBool && reponses.length == 4 && !(reponsesRetireesIndex.includes(index)),
+                'bg-[#ff6700] border-white': index === 2 && !afficherReponseBool && !(reponsesRetireesIndex.includes(index)),
+                'bg-[#32cd32] border-white': (index === 3 || (index === 1 && reponses.length == 2)) && !afficherReponseBool && !(reponsesRetireesIndex.includes(index)),
+              }" :disabled="afficherReponseBool === true || reponsesRetireesIndex.includes(index)" v-html="reponse">
             </button>
-
-            <!-- check sign
-  <svg :class="afficherReponseBool === false || afficherReponseBool && correctAnswerIndex !== index ? 'hidden' : '' " xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-  </svg> -->
 
           </li>
         </ul>
-        <!-- Bouton next -->
-        <div class="flex justify-end">
-          <button type="button" @click="questionSuivante"
-            class="rounded-full w-32 ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            :class="!afficherReponseBool ? 'invisible' : ''">
-            Next <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 inline">
-              <path fill-rule="evenodd"
-                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z"
-                clip-rule="evenodd" />
-            </svg>
-          </button>
+        <!-- Overlay derrière la popup -->
+        <div v-if="affichagePopupIndice" class="fixed inset-0 bg-black opacity-50"></div>
 
+        <!-- Popup indice -->
+        <div :class="{
+          'hidden' : !affichagePopupIndice,
+          'left-100': piecesIndice === 0 || piecesIndice < 3 && reponses.length == 2,
+          'left-96': piecesIndice != 0
+         }"
+          class="fixed top-48 bg-white rounded-3xl p-4">
+
+          <span class="absolute top-1.5 right-4 cursor-pointer text-gray-500 text-4xl"
+            @click="masquerPopupIndice">&times;</span>
+
+          <!-- Texte popup -->
+          <p class="p-8 pb-4" :class="piecesIndice == 0 || reponses.length == 2 ? 'hidden' : 'block'">Do you want to spend a coin to delete a wrong answer?</p>
+          <p class="p-8 pb-4" :class="piecesIndice < 3 || reponses.length == 4 ? 'hidden' : 'block'">Do you want to spend <b>3</b> coins to delete a wrong answer?</p>
+          <p class="p-8 pb-12" :class="piecesIndice == 0 || piecesIndice < 3 && reponses.length == 2 ? 'bloc' : 'hidden'">Not enough money 😔 <br> Keep playing to buy a hint! 🎮 <br> (Hints for true/false questions cost 3 coins)</p>
+          <!-- Boutons oui non -->
+          <button @click="depenserIndice" :class="piecesIndice == 0 || piecesIndice < 3 && reponses.length == 2 ? 'hidden' : 'visible'"
+            class="mb-8 mx-4 text-lg rounded-3xl shadow-md duration-200 ease-linear transform border-2e mt-2 mb-2 font-semibold w-24">Yes</button>
+          <button @click="masquerPopupIndice" :class="piecesIndice == 0 || piecesIndice < 3 && reponses.length == 2 ? 'hidden' : 'visible'"
+            class="mb-8 mx-4 text-lg rounded-3xl shadow-md duration-200 ease-linear transform border-2e mt-2 mb-2 font-semibold w-24">No</button>
+        
+          </div>
+
+        <div class="grid grid-cols-2">
+          <!-- Symbole indice -->
+          <div @click="afficherPopupIndice" :class="{
+            'hover:bg-blue-700 cursor-pointer transition-all hover:scale-110 hover:shadow-lg': !affichagePopupIndice,
+            'invisible' : !affichageBoutonIndice
+          }"
+            class=" flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full">
+            <img src="/img/idee-ampoule.png" class="h-12" alt="Lightbulb" />
+          </div>
+
+          <!-- Bouton next -->
+          <div class="flex justify-end">
+            <button type="button" @click="questionSuivante"
+              class="rounded-full h-11 w-32 ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              :class="!afficherReponseBool ? 'invisible' : ''">
+              Next <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                class="size-6 inline">
+                <path fill-rule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+
+          </div>
         </div>
-
       </div>
     </div>
-    <!-- ICI -->
   </div>
 </template>
 
@@ -79,30 +112,40 @@ const difficulteChoisie = props.difficulty;
 const nbQuestionsQuizz = props.nbQuestions;
 const nbQuestionsParAPI = 10; //nombre de tirages de questions a chaque appel API
 
-const question = ref("");
-const reponses = ref([]);
+const question = ref(""); // Question en cours
+const reponses = ref([]); // Reponses en cours
+const piecesIndice = ref(3); //TODO : faire le lien avec le compte
+let nombreBonneReponses = 0; // permet de calculer le gain des pièces indice
 
-let questionsList;
-let questionEnCours = 0;
+let questionsList; //Liste des questions chargées depuis l'API
+let questionEnCours = 0; //Indice de la question en cours dans la liste
 
+//Variables conditionnant l'affichage
 let correctAnswerIndex; // l'index du bouton contenant la bonne reponse
-let afficherReponseBool = ref(false);
-let mauvaiseReponseCliqueeIndex = ref(null);
+const afficherReponseBool = ref(false);
+const mauvaiseReponseCliqueeIndex = ref(null);
+const affichagePopupIndice = ref(false);
+const affichageBoutonIndice = ref(true);
+const reponsesRetireesIndex = ref([]);
+let selectedReponse = null;
 
 const heartsRemaining = ref(3); //nombre de coeur au début de la partie
 
+// Affiche les images de coeurs en fonction du nombre de vies restantes
 const getHeartImage = (index) => {
-  console.log(heartsRemaining.value)
   return index <= heartsRemaining.value ? '/img/full_heart.png' : '/img/transparent_empty_heart.png';
 };
 
+// Chargement des questions depuis l'API au chargement de la page
 onMounted(async () => {
   const responseAPI = await axios.get('https://opentdb.com/api.php?amount=' + nbQuestionsParAPI + '&category=' + categorieId + '&difficulty=' + difficulteChoisie);
   questionsList = responseAPI.data.results;
   majQuestion();
 })
 
-const afficherReponse = (selectedReponse, index) => {
+// Affichage des bonnes et mauvaises réponses lorsqu'une réponse est choisie
+const afficherReponse = (_selectedReponse, index) => {
+  selectedReponse = _selectedReponse;
   if (questionsList[questionEnCours].correct_answer != selectedReponse) {
     mauvaiseReponseCliqueeIndex.value = index;
     heartsRemaining.value -= 1;
@@ -110,8 +153,62 @@ const afficherReponse = (selectedReponse, index) => {
   afficherReponseBool.value = true;
 }
 
+// Affichage de la popup pour l'utilisation des indices
+const afficherPopupIndice = () => {
+  affichagePopupIndice.value = true;
+}
+
+// Fermeture de la popup pour l'utilisation des indices
+const masquerPopupIndice = () => {
+  affichagePopupIndice.value = false;
+}
+
+// Depense d'un indice (affecte le nombre de pièces et l'affichage des réponses)
+const depenserIndice = () => {
+  affichagePopupIndice.value = false;
+  if(reponses.value.length == 2) {
+    piecesIndice.value -= 3;
+  } else {
+    piecesIndice.value -= 1;
+  }
+  //tirage au sort d'une mauvaise reponse à retirer
+  let tirage = Math.floor(Math.random() * (reponses.value.length));
+  while (tirage == correctAnswerIndex || reponsesRetireesIndex.value.includes(tirage)) {
+    tirage = Math.floor(Math.random() * (reponses.value.length));
+  }
+  reponsesRetireesIndex.value.push(tirage);
+  if(reponses.value.length == reponsesRetireesIndex.value.length + 1) {
+    affichageBoutonIndice.value = false;
+  }
+}
+
+// Passage à la question suivante après visualisation des réponses
 const questionSuivante = () => {
+  affichageBoutonIndice.value = true;
+  //incrementation nb bonnes reponses
+  if (questionsList[questionEnCours].correct_answer == selectedReponse && reponsesRetireesIndex.value.length == 0) {
+    nombreBonneReponses += 1;
+    switch (difficulteChoisie) {
+      case "easy":
+        if (nombreBonneReponses % 8 == 0) {
+          piecesIndice.value += 1;
+        }
+        break;
+      case "medium":
+        if (nombreBonneReponses % 5 == 0) {
+          piecesIndice.value += 1;
+        }
+        break;
+      case "hard":
+        if (nombreBonneReponses % 3 == 0) {
+          piecesIndice.value += 1;
+        }
+        break;
+    }
+  }
+  selectedReponse = null;
   afficherReponseBool.value = false;
+  reponsesRetireesIndex.value = [];
   mauvaiseReponseCliqueeIndex.value = null;
   if (questionEnCours < nbQuestionsQuizz - 1) {
     questionEnCours += 1;
@@ -132,8 +229,9 @@ const questionSuivante = () => {
 
 }
 
+// Chargement de nouvelles questions lorsque le "stock" est épuisé
 const getQuestions = async () => {
-  const responseAPI = await axios.get('https://opentdb.com/api.php?amount=' + nbQuestionsParAPI + '&category=' + categorieId);
+  const responseAPI = await axios.get('https://opentdb.com/api.php?amount=' + nbQuestionsParAPI + '&category=' + categorieId + '&difficulty=' + difficulteChoisie);
 
   // Ajout des questions à la liste
   questionsList = questionsList.concat(responseAPI.data.results);
@@ -142,6 +240,7 @@ const getQuestions = async () => {
   majQuestion();
 }
 
+// Changement de la question en cours
 function majQuestion() {
   question.value = questionsList[questionEnCours].question;
 
@@ -172,11 +271,5 @@ function majQuestion() {
 <style scoped>
 h1 {
   text-shadow: 5px 6px 15px rgba(0, 0, 0, 0.3);
-}
-
-
-
-.test {
-  background-color: rgb(255 237 197 / 61%)
 }
 </style>
