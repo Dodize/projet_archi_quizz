@@ -1,7 +1,8 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import SelectionMenu from '../components/SelectionnerMenu.vue';
-import Game from '../components/Partie.vue';
+import Partie from '../components/Partie.vue';
+import Connexion from '../components/Connexion.vue';
 
 const routes = [
   {
@@ -12,7 +13,7 @@ const routes = [
   {
     path: '/game',
     name: 'Game',
-    component: Game,
+    component: Partie,
     props: route => ({
       categoryId: route.query.categoryId,
       categoryName: route.query.categorieName,
@@ -20,6 +21,11 @@ const routes = [
       nbQuestions: route.query.nbQuestions,
     }),
   },
+  {
+    path: '/connection',
+    name: 'Connection',
+    component: Connexion,
+  }
 ];
 
 const router = createRouter({
