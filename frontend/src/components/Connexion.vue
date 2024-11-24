@@ -96,8 +96,10 @@ export default {
             password: this.password,
           });
 
-          this.successMessage = `Welcome, ${response.data.user.username}! Login successful.`;
+          this.successMessage = `Welcome, ${response.data.token.username}! Login successful.`;
           this.errorMessage = "";
+
+          localStorage.setItem('token', response.data.token);
         }
 
         // Réinitialiser les champs de saisie
