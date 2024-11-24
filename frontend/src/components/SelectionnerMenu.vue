@@ -132,9 +132,10 @@
   router.push({
     name: 'Game',
     query: {
-      category: activeCategory.value,
-      difficulty: activeDifficulty.value,
-      nbQuestions: activeNbQuestions.value,
+      categoryId: categories.value[activeCategory.value].id,
+      categorieName: categories.value[activeCategory.value].name,
+      difficulty: difficulties.value[activeDifficulty.value],
+      nbQuestions: activeNbQuestions.value < nbQuestions.value.length ? nbQuestions.value[activeNbQuestions.value] : Infinity,
     },
   });
 };

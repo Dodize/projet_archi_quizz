@@ -10,6 +10,7 @@ export default {
         '128': '33rem'
       },
       spacing: {
+        '100': '27rem',
         '128': '40rem',
       },
       colors: {
@@ -19,7 +20,8 @@ export default {
           button: '#1671D7',
           hover: '#1a82e2'
         },
-        boxGrey: 'rgba(255, 255, 255, 0.7)'
+        boxGrey: 'rgba(255, 255, 255, 0.7)',
+        transparentRed : 'rgb(255 237 197 / 61%)'
       },
       borderWidth: {
         DEFAULT: '1px',

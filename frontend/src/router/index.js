@@ -1,7 +1,7 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import SelectionMenu from '../components/SelectionnerMenu.vue';
-import Game from '../components/Game.vue';
+import Partie from '../components/Partie.vue';
 import Connexion from '../components/Connexion.vue';
 
 const routes = [
@@ -13,9 +13,10 @@ const routes = [
   {
     path: '/game',
     name: 'Game',
-    component: Game,
+    component: Partie,
     props: route => ({
-      category: route.query.category,
+      categoryId: route.query.categoryId,
+      categoryName: route.query.categorieName,
       difficulty: route.query.difficulty,
       nbQuestions: route.query.nbQuestions,
     }),
