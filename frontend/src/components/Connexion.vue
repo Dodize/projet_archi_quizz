@@ -96,7 +96,7 @@ export default {
             password: this.password,
           });
 
-          this.successMessage = `Welcome, ${response.data.token.username}! Login successful.`;
+          this.successMessage = `Welcome, ${this.username}! Login successful.`;
           this.errorMessage = "";
 
           localStorage.setItem('token', response.data.token);
