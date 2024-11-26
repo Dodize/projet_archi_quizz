@@ -13,12 +13,12 @@
       <div class="flex justify-center space-x-4 mt-6">
         <router-link to="/game" class="flex-1 max-w-xs">
           <button class="w-full px-4 py-2 text-white font-semibold rounded-md bg-[#007bff] hover:bg-blue-600">
-            Rejouer (mêmes paramètres)
+            Play again (same settings)
           </button>
         </router-link>
         <router-link to="/" class="flex-1 max-w-xs">
           <button class="w-full px-4 py-2 text-white font-semibold rounded-md bg-[#ff1493] hover:bg-pink-600">
-            Retour au Menu
+            Go back to main menu
           </button>
         </router-link>
       </div>
@@ -38,8 +38,8 @@ const gameOverReason = store.gameOverReason;
 // Déterminer le message affiché selon la raison de la fin de partie
 const message =
   gameOverReason === 'hearts'
-    ? "La partie est terminée : vous avez perdu tous vos cœurs. Essayez de nouveau pour battre votre record !"
-    : "Bravo ! Vous avez répondu à toutes les questions 🎉";
+    ? "The game's over: you've lost all your hearts. Try again to beat your record!"
+    : "Congratulations! You've answered all the questions 🎉";
 </script>
 
 <style scoped>
