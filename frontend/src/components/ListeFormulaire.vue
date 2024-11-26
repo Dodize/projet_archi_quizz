@@ -7,9 +7,9 @@
       'hover:text-white hover:border-transparent': !isActive
     }"
     :style="{
-      backgroundColor: isActive ? color : 'transparent',
-      color: isActive ? 'white' : color,
-      borderColor: color
+      backgroundColor: isActive ? '#32cd32' : color,
+      color: 'white',
+      borderColor: isActive ? '#32cd32' : color
     }"
   >
     <template v-if="isImage">
