@@ -12,6 +12,7 @@ model Joueur {
   username      String   @unique
   password      String
   argent        Int
+  avatar        String
   partiesJouees Partie[]
 }
 
