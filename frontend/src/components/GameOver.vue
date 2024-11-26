@@ -28,11 +28,12 @@
 
 <script setup>
 import { useRoute } from 'vue-router';
+import { store } from './store.js';
 
 const route = useRoute();
 
-const nbQuestions = route.query.nbQuestions;
-const gameOverReason = route.query.gameOverReason;
+const nbQuestionsRight = store.nbQuestionsRight;
+const gameOverReason = store.gameOverReason;
 
 // Déterminer le message affiché selon la raison de la fin de partie
 const message =

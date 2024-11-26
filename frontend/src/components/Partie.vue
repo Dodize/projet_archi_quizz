@@ -112,7 +112,7 @@
 <script async setup>
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { ref, onMounted, defineProps, watch } from "vue"
+import { ref, onMounted, watch } from "vue"
 import { store } from './store.js';
 
 // Variables globales
@@ -201,13 +201,9 @@ const depenserIndice = () => {
 //**Watcher** pour surveiller heartsRemaining et rediriger si la valeur atteint 0
 watch(heartsRemaining, (newVal) => {
     if (newVal <= 0) {
-      router.push({
-        name: 'GameOver',
-        query: {
-          nbQuestions: nbQuestionsQuizz, // Nombre de questions
-          gameOverReason: 'hearts',      // Raison de la fin
-        },
-    });
+      store.gameOverReason = 'hearts',
+      store.nbQuestionsRight = nbQuestionsQuizz,
+      router.push('/GameOver');
   }
 });
 
@@ -252,13 +248,9 @@ const questionSuivante = () => {
     }
 
   } else {
-    router.push({
-      name: 'GameOver',
-      query: {
-        nbQuestions: nbQuestionsQuizz, // Nombre de questions
-        gameOverReason: 'questions',      // Raison de la fin
-      },
-    });
+      store.gameOverReason = 'questions',
+      store.nbQuestionsRight = nbQuestionsQuizz,
+      router.push('/GameOver');
 }
 }
 
