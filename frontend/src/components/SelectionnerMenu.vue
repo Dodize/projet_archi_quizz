@@ -11,8 +11,8 @@
   </div>
 
     <!-- Boucle sur les catégories -->
-    <h1 class="text-center mb-6 mt-0 text-2xl font-extrabold">Catégories</h1>
-    <div v-if="categories.length" class="flex flex-wrap justify-center gap-4 text-center">
+    <h1 class="text-center mb-6 mt-3 text-2xl font-extrabold">Category</h1>
+    <div v-if="categories.length" class="flex flex-wrap justify-center gap-4 text-center text-sm">
       <!-- Appel de ListeFormulaire pour chaque catégorie -->
       <ListeFormulaire
         v-for="(category, index) in categories" 
@@ -29,8 +29,8 @@
     </div>
   
     <!-- Boucle sur les difficultés -->
-    <h1 class="text-center mb-6 mt-0 text-2xl font-extrabold">Difficultés</h1>
-    <div v-if="difficulties.length" class="flex flex-wrap justify-center gap-4 text-center">
+    <h1 class="text-center mb-6 mt-0 text-2xl font-extrabold">Difficulties</h1>
+    <div v-if="difficulties.length" class="flex flex-wrap justify-center gap-4 text-center text-base">
       <ListeFormulaire
         v-for="(difficulty, index) in difficulties" 
         :key="index"
@@ -46,8 +46,8 @@
     </div>
   
     <!-- Boucle sur les nombres de questions -->
-    <h1 class="text-center mb-6 mt-0 text-2xl font-extrabold">Nombre de questions</h1>
-    <div v-if="nbQuestions.length" class="flex flex-wrap justify-center gap-4 text-center">
+    <h1 class="text-center mb-6 mt-0 text-2xl font-extrabold">Number of questions</h1>
+    <div v-if="nbQuestions.length" class="flex flex-wrap justify-center gap-4 text-center text-base">
       <ListeFormulaire
         v-for="(nbQ, index) in nbQuestions"
         :key="index"
@@ -76,7 +76,7 @@
         :disabled="activeCategory === null || activeDifficulty === null || activeNbQuestions === null"
         class="bg-[#32cd32] text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Commencer la Partie
+        Start the Game
       </button>
     </div>
   
@@ -87,6 +87,7 @@
   import { ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
   import ListeFormulaire from './ListeFormulaire.vue';
+  import { store } from './store.js';
   
   // Variables de stockage des informations
   const router = useRouter();
@@ -129,15 +130,11 @@
   });  
 
   const startGame = () => {
-  router.push({
-    name: 'Game',
-    query: {
-      categoryId: categories.value[activeCategory.value].id,
-      categorieName: categories.value[activeCategory.value].name,
-      difficulty: difficulties.value[activeDifficulty.value],
-      nbQuestions: activeNbQuestions.value < nbQuestions.value.length ? nbQuestions.value[activeNbQuestions.value] : Infinity,
-    },
-  });
+    store.categoryId = categories.value[activeCategory.value].id;
+    store.categoryName = categories.value[activeCategory.value].name;
+    store.difficulty = difficulties.value[activeDifficulty.value];
+    store.nbQuestions = activeNbQuestions.value < nbQuestions.value.length ? nbQuestions.value[activeNbQuestions.value] : Infinity;
+    router.push('/game');
 };
 
   </script>

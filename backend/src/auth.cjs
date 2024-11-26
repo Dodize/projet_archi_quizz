@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('@prisma/client').PrismaClient;
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const prismaClient = new prisma();
 
@@ -39,18 +41,21 @@ router.post('/register', async (req, res) => {
 // Route pour connexion
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
-
+  
   try {
-    console.log("id :");
-    console.log(username);
-    const user = await prismaClient.joueur.findUnique({ where: { username } });
-    console.log(user)
+    const player = await prismaClient.joueur.findUnique({ where: { username: username }, });
 
-    if (user && await bcrypt.compare(password, user.password)) {
-      res.json({ message: "Connexion réussie", user });
+    if (!player || !await bcrypt.compare(password, player.password)) {
+      return res.status(401).json({ error: "Mot de passe incorrect" });
     } else {
-      res.status(401).json({ error: "Identifiants incorrects" });
+        const token = jwt.sign(
+          { id: player.id, username: player.username },
+          process.env.JWT_SECRET,
+          { expiresIn: '1h' }
+        );
+      res.json({ message: "Connexion réussie", token });
     }
+
   } catch (error) {
     res.status(500).json({ error: "Erreur lors de la connexion" });
   }
