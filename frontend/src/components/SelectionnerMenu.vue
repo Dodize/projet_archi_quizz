@@ -87,6 +87,7 @@
   import { ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
   import ListeFormulaire from './ListeFormulaire.vue';
+  import { store } from './store.js';
   
   // Variables de stockage des informations
   const router = useRouter();
@@ -129,15 +130,11 @@
   });  
 
   const startGame = () => {
-  router.push({
-    name: 'Game',
-    query: {
-      categoryId: categories.value[activeCategory.value].id,
-      categorieName: categories.value[activeCategory.value].name,
-      difficulty: difficulties.value[activeDifficulty.value],
-      nbQuestions: activeNbQuestions.value < nbQuestions.value.length ? nbQuestions.value[activeNbQuestions.value] : Infinity,
-    },
-  });
+    store.categoryId = categories.value[activeCategory.value].id;
+    store.categoryName = categories.value[activeCategory.value].name;
+    store.difficulty = difficulties.value[activeDifficulty.value];
+    store.nbQuestions = activeNbQuestions.value < nbQuestions.value.length ? nbQuestions.value[activeNbQuestions.value] : Infinity;
+    router.push('/game');
 };
 
   </script>
