@@ -17,7 +17,6 @@
             v-for="(icon, index) in avatarsDisponibles"
             :key="index"
             :src="icon"
-            :alt="'Avatar ' + (index + 1)"
             class="cursor-pointer w-16 h-16 rounded-full p-1 border-2 transition-transform"
             :class="{
               'border-blue-500 scale-105': icon === avatarActuel,
