@@ -8,7 +8,6 @@
       <p class="text-sm font-semibold text-gray-700">Username</p>
     </div>
 
-    <!-- coeur sur vous -->
     <div class="grid grid-cols-[1fr_5fr]">
       <!-- Affichage des coeurs -->
       <div class="w-36 ml-2.5">
@@ -113,7 +112,7 @@
 <script async setup>
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { ref, onMounted, defineProps } from "vue"
+import { ref, onMounted, defineProps, watch } from "vue"
 
 // Variables globales
 const router = useRouter();
@@ -205,6 +204,19 @@ const depenserIndice = () => {
   }
 }
 
+//**Watcher** pour surveiller heartsRemaining et rediriger si la valeur atteint 0
+watch(heartsRemaining, (newVal) => {
+    if (newVal <= 0) {
+      router.push({
+        name: 'GameOver',
+        query: {
+          nbQuestions: nbQuestionsQuizz, // Nombre de questions
+          gameOverReason: 'hearts',      // Raison de la fin
+        },
+    });
+  }
+});
+
 // Passage à la question suivante après visualisation des réponses
 const questionSuivante = () => {
   affichageBoutonIndice.value = true;
@@ -246,10 +258,14 @@ const questionSuivante = () => {
     }
 
   } else {
-    question.value = "FINIIIIIIIIIIIIII";
-    reponses.value = "";
-  }
-
+    router.push({
+      name: 'GameOver',
+      query: {
+        nbQuestions: nbQuestionsQuizz, // Nombre de questions
+        gameOverReason: 'questions',      // Raison de la fin
+      },
+    });
+}
 }
 
 // Chargement de nouvelles questions lorsque le "stock" est épuisé
@@ -286,8 +302,6 @@ function majQuestion() {
   reponses.value.splice(correctAnswerIndex, 0, correctAnswer);
   console.log(correctAnswer); //TODO : penser a enlever
 }
-
-
 
 </script>
 
