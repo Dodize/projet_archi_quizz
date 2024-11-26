@@ -2,6 +2,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import SelectionMenu from '../components/SelectionnerMenu.vue';
 import Partie from '../components/Partie.vue';
+import Statistiques from '../components/Statistiques.vue';
 import Connexion from '../components/Connexion.vue';
 
 const routes = [
@@ -20,6 +21,11 @@ const routes = [
       difficulty: route.query.difficulty,
       nbQuestions: route.query.nbQuestions,
     }),
+  },
+  {
+    path: '/test',
+    name: 'Test',
+    component: Statistiques
   },
   {
     path: '/connection',

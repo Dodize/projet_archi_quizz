@@ -27,7 +27,7 @@
       <!-- Contenu "quizz box" -->
       <div class="flex">
         <div class="overflow-y-auto mt-2.5 bg-boxGrey p-7 pb-4 rounded-2xl w-4/5 text-center shadow-2xl h-128">
-          <h1 class="text-center mb-6 mt-0 text-5xl font-extrabold">{{ categoryName }}</h1>
+          <h1 class="text-center mb-6 mt-0 text-5xl font-extrabold">{{ store.categoryName }}</h1>
           <p v-html="question" class="text-center mb-2"></p>
 
           <!-- Reponses -->
@@ -102,6 +102,12 @@
                 </svg>
               </button>
 
+              <!-- REMOVE -->
+              <button 
+        @click="startTest">
+        TEST
+      </button>
+
             </div>
           </div>
         </div>
@@ -113,22 +119,20 @@
 <script async setup>
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { ref, onMounted, defineProps } from "vue"
+import { ref, onMounted } from "vue";
+
+import { store } from './store.js';
+
+
+console.log(store)
 
 // Variables globales
 const router = useRouter();
 
-const props = defineProps({
-  categoryId: String,
-  categoryName: String,
-  difficulty: String,
-  nbQuestions: [String, Number],
-});
-
 //Parametres de la partie
-const categorieId = props.categoryId;
-const difficulteChoisie = props.difficulty;
-const nbQuestionsQuizz = props.nbQuestions;
+const categorieId = store.categoryId;
+const difficulteChoisie = store.difficulty;
+const nbQuestionsQuizz = store.nbQuestions;
 const nbQuestionsParAPI = 10; //nombre de tirages de questions a chaque appel API
 
 const question = ref(""); // Question en cours
@@ -285,6 +289,11 @@ function majQuestion() {
 
   reponses.value.splice(correctAnswerIndex, 0, correctAnswer);
   console.log(correctAnswer); //TODO : penser a enlever
+}
+
+const startTest = () => {
+    router.push('/test');
+
 }
 
 
