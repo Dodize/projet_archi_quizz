@@ -16,13 +16,13 @@ const authenticateJWT = (req, res, next) => {
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
       if (err) {
-        return res.status(403).json({ error: 'Token invalide' });
+        return res.status(403).json({ error: 'Unauthorized' });
       }
       req.user = user; // Stocker les infos de l'utilisateur dans req.user
       next();
     });
   } else {
-    res.status(401).json({ error: 'Token manquant' });
+    res.status(401).json({ error: 'Unauthorized' });
   }
 };
 
@@ -31,7 +31,7 @@ router.post('/change-password', authenticateJWT, async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
   if (!oldPassword || !newPassword) {
-    return res.status(400).json({ error: "Les deux mots de passe sont requis." });
+    return res.status(400).json({ error: "The two passwords are required." });
   }
 
   try {
@@ -41,13 +41,13 @@ router.post('/change-password', authenticateJWT, async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: "Utilisateur introuvable." });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Vérifier si l'ancien mot de passe est correct
     const isPasswordCorrect = await bcrypt.compare(oldPassword, user.password);
     if (!isPasswordCorrect) {
-      return res.status(401).json({ error: "L'ancien mot de passe est incorrect." });
+      return res.status(401).json({ error: "The old password is incorrect." });
     }
 
     // Hasher le nouveau mot de passe
@@ -59,10 +59,10 @@ router.post('/change-password', authenticateJWT, async (req, res) => {
       data: { password: hashedPassword },
     });
 
-    res.json({ message: "Mot de passe mis à jour avec succès." });
+    res.json({ message: "Password changed successfully." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Une erreur est survenue lors du changement de mot de passe." });
+    res.status(500).json({ error: "An error occurred while changing the password." });
   }
 });
 
@@ -70,7 +70,7 @@ router.post('/change-password', authenticateJWT, async (req, res) => {
 router.get("/user-informations", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ error: "Non autorisé" });
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
   try {
@@ -93,13 +93,13 @@ router.get("/user-informations", async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: "Utilisateur non trouvé" });
+      return res.status(404).json({ error: "User not found" });
     }
 
     res.json(user);
   } catch (error) {
-    console.error("Erreur lors de la récupération du profil :", error);
-    res.status(500).json({ error: "Erreur serveur" });
+    console.error("An error occurred during the recuperation of the profile :", error);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -109,7 +109,7 @@ router.post('/update-avatar', authenticateJWT, async (req, res) => {
   avatar = avatar.replace('/img/', '');
   
   if (!avatar) {
-    return res.status(400).json({ error: "L'avatar est requis." });
+    return res.status(400).json({ error: "Avatar required" });
   }
 
   try {
@@ -119,7 +119,7 @@ router.post('/update-avatar', authenticateJWT, async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: "Utilisateur introuvable." });
+      return res.status(404).json({ error: "User not found." });
     }
 
     // Mettre à jour l'avatar dans la base de données
@@ -129,12 +129,12 @@ router.post('/update-avatar', authenticateJWT, async (req, res) => {
     });
 
     res.json({
-      message: "Avatar mis à jour avec succès.",
+      message: "Avatar changed successfully.",
       avatar: updatedUser.avatar,
     });
   } catch (error) {
-    console.error("Erreur lors de la mise à jour de l'avatar :", error);
-    res.status(500).json({ error: "Une erreur est survenue lors de la mise à jour de l'avatar." });
+    console.error("An error occurred while changing the avatar :", error);
+    res.status(500).json({ error: "An error occurred while changing the avatar." });
   }
 });
 
