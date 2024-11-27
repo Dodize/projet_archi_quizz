@@ -2,10 +2,14 @@
   <div class="relative">
 
     <!-- Avatar + username ou "Login" selon si connecté -->
-    <div @click="ouvrirCompte"
-      class="cursor-pointer transition-all hover:scale-110 hover:shadow-lg absolute top-3 right-4 flex items-center bg-boxGrey w-36 border-amber-500 rounded-lg p-2 space-x-2">
-      <img src="/img/panda.png" alt="Icône" class="h-10 w-10" />
-      <p class="text-sm font-semibold text-gray-700">Username</p>
+    <div
+      @click="ouvrirCompte"
+      class="cursor-pointer transition-all hover:scale-110 hover:shadow-lg absolute top-3 right-4 flex items-center bg-boxGrey w-36 border-amber-500 rounded-lg p-2 space-x-2"
+    >
+      <img :src="isConnected ? avatar : '/img/default-avatar.png'" alt="Icône utilisateur" class="h-10 w-10 rounded-full" />
+      <p class="text-sm font-semibold text-gray-700">
+        {{ isConnected ? username : "Log in" }}
+      </p>
     </div>
 
     <!-- coeur sur vous -->
@@ -124,10 +128,65 @@ import { ref, onMounted } from "vue";
 import { store } from './store.js';
 
 
-console.log(store)
-
 // Variables globales
 const router = useRouter();
+
+// État utilisateur
+const isConnected = ref(false);
+const username = ref("");
+const avatar = ref("");
+
+// Fonction pour charger les informations utilisateur
+const fetchUserInfo = async () => {
+  try {
+    // Récupération du token depuis le localStorage (ou autre méthode que vous utilisez)
+    const token = localStorage.getItem('token');
+
+    // Vérifiez si un token existe
+    if (!token) {
+      console.log("Token non trouvé");
+      isConnected.value = false;
+      return;
+    }
+
+    // Appel API avec le token dans les headers
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/user-informations`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Ajout du token dans le header Authorization
+      },
+    });
+
+    if (response.data && response.data.username) {
+      isConnected.value = true;
+      username.value = response.data.username;
+      avatar.value = `/img/${response.data.avatar}` || "/img/default-avatar.png";
+    } else {
+      isConnected.value = false;
+    }
+  } catch (error) {
+    console.error("Erreur lors du chargement des informations utilisateur :", error);
+    isConnected.value = false;
+  }
+};
+
+// Fonction pour ouvrir la page de compte ou de connexion
+const ouvrirCompte = () => {
+  if (isConnected.value) {
+    router.push("/account"); // Rediriger vers le compte utilisateur
+  } else {
+    router.push("/connection"); // Rediriger vers la page de connexion
+  }
+};
+
+// Charger les informations utilisateur au montage
+onMounted(fetchUserInfo);
+
+const props = defineProps({
+  categoryId: String,
+  categoryName: String,
+  difficulty: String,
+  nbQuestions: [String, Number],
+});
 
 //Parametres de la partie
 const categorieId = store.categoryId;
@@ -157,10 +216,6 @@ const heartsRemaining = ref(3); //nombre de coeur au début de la partie
 // Affiche les images de coeurs en fonction du nombre de vies restantes
 const getHeartImage = (index) => {
   return index <= heartsRemaining.value ? '/img/full_heart.png' : '/img/transparent_empty_heart.png';
-};
-
-const ouvrirCompte = () => {
-  router.push('/connection');
 };
 
 // Chargement des questions depuis l'API au chargement de la page

@@ -9,7 +9,7 @@ const prismaClient = new prisma();
 
 // Route pour création de compte
 router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, argent, avatar } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
@@ -28,7 +28,8 @@ router.post('/register', async (req, res) => {
       data: {
         username: username,
         password: hashedPassword,
-        argent: 0,
+        argent: argent,
+        avatar: avatar,
       },
     });
 
