@@ -34,10 +34,10 @@
           <div v-else-if="activeTab === 'stats'">
             <h2 class="text-3xl font-bold mb-4">Game Statistics</h2>
             <p class="text-lg">Total Games Played: {{ nbParties }}</p>
-            <p class="text-lg">Number of coins: {{ nbCoins }}</p>
+            <p class="text-lg" :class="recordModeInfini == 0 ? 'hidden' : 'block'">Record for infinite mode: {{ recordModeInfini }}</p>
 
             <!-- Chart -->
-            <div class="flex justify-center mt-10">
+            <div class="flex mt-10">
               <div class="w-1/2">
                 <canvas ref="quizChart"></canvas>
               </div>
@@ -50,18 +50,19 @@
   </template>
   
   <script async setup>
-  import { ref, onMounted, watch, nextTick } from "vue";
+  import { ref, watch, nextTick } from "vue";
   import Chart from "chart.js/auto";
   
+  //TODO : changer tout ça par des vraies valeurs
   const activeTab = ref("account"); // Onglet actif par défaut
   const nbParties = ref(3); // Exemple de données
-  const nbCoins = ref(10); // Exemple de données
+  const recordModeInfini = ref(10); // Exemple de données
   
   // Données pour le graphique
   const categories = ref(["History", "Science", "Entertainment", "Sports", "Geography"]);
   const categoryData = ref([25, 35, 15, 10, 15]); // Nombre de parties par catégorie
   
-  // Référence au canvas
+  // Création du graphique -> catégories
   const quizChart = ref(null);
   let chartInstance = null; // Garde une instance du graphique pour éviter les doublons
   
@@ -91,6 +92,7 @@
             data: categoryData.value,
             backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
             hoverOffset: 4,
+            borderWidth: 0
           },
         ],
       },
@@ -98,11 +100,19 @@
         responsive: true,
         plugins: {
           legend: {
-            position: "bottom",
+            position: "left",
+            align: "start",
+            labels: {
+              margin: 50,
+            },
           },
           title: {
             display: true,
-            text: "Most Played Quiz Categories",
+            text: "Your most played categories",
+            align: "end",
+            font: {
+              size: 24,
+            }
           },
         },
       },
@@ -112,17 +122,10 @@
   // Regarder les changements d'onglet et rendre le graphique
   watch(activeTab, async (newTab) => {
     if (newTab === "stats") {
-      console.log("ici");
       await renderChart();
     }
   });
-  
-  onMounted(async () => {
-    // Optionnel : Si "stats" est actif au montage, créer le graphique directement
-    if (activeTab.value === "stats") {
-      await renderChart();
-    }
-  });
+
   </script>
   
   
