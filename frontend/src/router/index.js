@@ -3,10 +3,16 @@ import { createRouter, createWebHistory } from 'vue-router';
 import SelectionMenu from '../components/SelectionnerMenu.vue';
 import Partie from '../components/Partie.vue';
 import Connexion from '../components/Connexion.vue';
+import Acceuil from '../components/Acceuil.vue';
 
 const routes = [
   {
     path: '/',
+    name: 'Acceuil',
+    component: Acceuil,
+  },
+  {
+    path: '/selectionMenu',
     name: 'SelectionMenu',
     component: SelectionMenu,
   },
