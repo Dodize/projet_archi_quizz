@@ -3,7 +3,7 @@
     <div class="overflow-y-auto mt-2.5 bg-boxGrey p-7 pb-4 rounded-2xl w-4/5 text-center shadow-2xl h-64">
       <!-- Affichage conditionnel basé sur gameOverReason -->
       <h1 class="text-5xl font-extrabold mb-4">
-        {{ gameOverReason === 'hearts' ? 'Défaite 😔' : 'Victoire 🎉' }}
+        {{ gameOverReason === 'hearts' ? 'Defeat 😔' : 'Victory 🎉' }}
       </h1>
       <p class="text-lg">
         {{ message }}
