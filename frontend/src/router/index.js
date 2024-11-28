@@ -4,6 +4,7 @@ import SelectionMenu from '../components/SelectionnerMenu.vue';
 import Partie from '../components/Partie.vue';
 import Connexion from '../components/Connexion.vue';
 import GameOver from '../components/GameOver.vue';
+import InfosCompte from '../components/InfosCompte.vue';
 
 const routes = [
   {
@@ -35,6 +36,11 @@ const routes = [
     path: '/connection',
     name: 'Connection',
     component: Connexion,
+  },
+  {
+    path: '/account',
+    name: 'InfosCompte',
+    component: InfosCompte,
   }
 ];
 
