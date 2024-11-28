@@ -3,8 +3,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import SelectionMenu from '../components/SelectionnerMenu.vue';
 import Partie from '../components/Partie.vue';
 import Connexion from '../components/Connexion.vue';
-import Acceuil from '../components/Acceuil.vue';
 import InfosCompte from '../components/InfosCompte.vue';
+import Acceuil from '../components/Acceuil.vue';
+import GameOver from '../components/GameOver.vue';
 
 const routes = [
   {
@@ -26,6 +27,15 @@ const routes = [
       categoryName: route.query.categorieName,
       difficulty: route.query.difficulty,
       nbQuestions: route.query.nbQuestions,
+    }),
+  },
+  {
+    path: '/gameOver',
+    name: 'GameOver',
+    component: GameOver,
+    props: route => ({
+      nbQuestions: route.query.nbQuestions,
+      gameOverReason: route.query.gameOverReason,
     }),
   },
   {
