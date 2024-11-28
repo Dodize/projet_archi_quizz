@@ -83,6 +83,7 @@ export default {
             username: this.username,
             password: this.password,
             argent: 0, // à voir si on lui met de l'argent
+            avatar: "default-avatar.png",
           });
 
           this.successMessage = `Account successfully created for ${response.data.user.username}. You can now login.`;
