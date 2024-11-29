@@ -46,7 +46,9 @@ router.post('/login', async (req, res) => {
   try {
     const player = await prismaClient.joueur.findUnique({ where: { username: username }, });
 
-    if (!player || !await bcrypt.compare(password, player.password)) {
+    if (!player) {
+      return res.status(401).json({ error: "The user does not exist" });
+    } else if (!await bcrypt.compare(password, player.password)) {
       return res.status(401).json({ error: "Wrong password" });
     } else {
         const token = jwt.sign(
