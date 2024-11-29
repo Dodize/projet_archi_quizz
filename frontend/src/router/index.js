@@ -47,12 +47,26 @@ const routes = [
     path: '/account',
     name: 'InfosCompte',
     component: InfosCompte,
+    meta: { requiresAuth: true },
   }
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+// Middleware pour vérifier si la route nécessite une authentification
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = !!localStorage.getItem('token');
+
+  // Si l'utilisateur essayer d'accéder à une route protégée sans être connecté, redirection login
+  if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticated) {
+    next({ name: 'Connection' });
+  // Si connecté, on le laisse aller à la page
+  } else {
+    next();
+  }
 });
 
 export default router;
