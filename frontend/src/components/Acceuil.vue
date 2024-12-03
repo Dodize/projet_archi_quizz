@@ -1,7 +1,7 @@
 <template>
     <div class="text-center mt-6">
       <h1 class="text-6xl mb-10">
-        Welcome in our Game about General Culture
+        Welcome in Culture Quizz
       </h1>
       <!-- Bouton Connexion -->
       <button
