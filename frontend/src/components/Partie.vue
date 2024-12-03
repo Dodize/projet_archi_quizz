@@ -88,7 +88,7 @@
             <!-- Symbole indice -->
             <div @click="afficherPopupIndice" :class="{
               'hover:bg-blue-700 cursor-pointer transition-all hover:scale-110 hover:shadow-lg': !affichagePopupIndice,
-              'invisible': !affichageBoutonIndice
+              'invisible': !affichageBoutonIndice || afficherReponseBool
             }" class=" flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full">
               <img src="/img/idee-ampoule.png" class="h-12" alt="Lightbulb" />
             </div>
@@ -105,13 +105,6 @@
                     clip-rule="evenodd" />
                 </svg>
               </button>
-
-              <!-- REMOVE -->
-              <button 
-        @click="startTest">
-        TEST
-      </button>
-
             </div>
           </div>
         </div>
