@@ -12,7 +12,6 @@
       </p>
     </div>
 
-    <!-- coeur sur vous -->
     <div class="grid grid-cols-[1fr_5fr]">
       <!-- Affichage des coeurs -->
       <div class="w-36 ml-2.5">
@@ -116,10 +115,8 @@
 <script async setup>
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { ref, onMounted } from "vue";
-
+import { ref, onMounted, watch } from "vue"
 import { store } from './store.js';
-
 
 // Variables globales
 const router = useRouter();
@@ -257,6 +254,15 @@ const depenserIndice = () => {
   }
 }
 
+//**Watcher** pour surveiller heartsRemaining et rediriger si la valeur atteint 0
+watch(heartsRemaining, (newVal) => {
+    if (newVal <= 0) {
+      store.gameOverReason = 'hearts',
+      store.nbQuestionsRight = nbQuestionsQuizz,
+      router.push('/GameOver');
+  }
+});
+
 // Passage à la question suivante après visualisation des réponses
 const questionSuivante = () => {
   affichageBoutonIndice.value = true;
@@ -298,10 +304,10 @@ const questionSuivante = () => {
     }
 
   } else {
-    question.value = "FINIIIIIIIIIIIIII";
-    reponses.value = "";
-  }
-
+      store.gameOverReason = 'questions',
+      store.nbQuestionsRight = nbQuestionsQuizz,
+      router.push('/GameOver');
+}
 }
 
 // Chargement de nouvelles questions lorsque le "stock" est épuisé
@@ -338,13 +344,6 @@ function majQuestion() {
   reponses.value.splice(correctAnswerIndex, 0, correctAnswer);
   console.log(correctAnswer); //TODO : penser a enlever
 }
-
-const startTest = () => {
-    router.push('/test');
-
-}
-
-
 
 </script>
 
