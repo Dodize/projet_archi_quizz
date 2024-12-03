@@ -4,14 +4,14 @@ import SelectionMenu from '../components/SelectionnerMenu.vue';
 import Partie from '../components/Partie.vue';
 import Connexion from '../components/Connexion.vue';
 import InfosCompte from '../components/InfosCompte.vue';
-import Acceuil from '../components/Acceuil.vue';
+import Accueil from '../components/Accueil.vue';
 import GameOver from '../components/GameOver.vue';
 
 const routes = [
   {
     path: '/',
-    name: 'Acceuil',
-    component: Acceuil,
+    name: 'Accueil',
+    component: Accueil,
   },
   {
     path: '/selectionMenu',
