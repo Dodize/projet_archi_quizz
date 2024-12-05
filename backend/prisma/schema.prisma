@@ -17,9 +17,11 @@ model Joueur {
 }
 
 model Partie {
-  id              Int     @id @default(autoincrement())
-  joueurId        Int
-  nbQuestions     Int
-  indicesUtilises Boolean
-  joueur          Joueur  @relation(fields: [joueurId], references: [id])
+  id               Int    @id @default(autoincrement())
+  joueurId         Int
+  nbQuestions      Int
+  nbBonnesReponses Int
+  indicesUtilises  Int
+  categorie        String
+  joueur           Joueur @relation(fields: [joueurId], references: [id])
 }

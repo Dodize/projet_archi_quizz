@@ -140,15 +140,28 @@
         </div>
         <div v-else-if="activeTab === 'stats'">
           <h2 class="text-3xl font-bold mb-4">Game Statistics</h2>
-          <p class="text-lg">Total Games Played: {{ nbParties }}</p>
-          <p class="text-lg" :class="recordModeInfini == 0 ? 'hidden' : 'block'">Record for infinite mode: {{ recordModeInfini }}</p>
+          <p class="text-base">Total Games Played: {{ nbParties }}</p>
+          <p class="text-base" :class="recordModeInfini == 0 ? 'hidden' : 'block'">Record for infinite mode: {{ recordModeInfini }}</p>
 
           <!-- Chart -->
-          <div class="flex mt-10">
+          <h3 class="text-2xl mt-5 text-center font-bold" :class="{'hidden': partiesJouees.length === 0}" v-html="graphTitle"></h3>
+          <div class="flex  justify-center" id="chartLegendContainer">
             <div class="w-1/2">
-              <canvas ref="quizChart"></canvas>
+              <canvas class="h-72" ref="quizChart"></canvas>
             </div>
           </div>
+          <!-- Fleches pour parcourir les graphs -->
+          <div class="flex justify-between mx-8">
+            <button @click="changeGraph(-1)" :disabled="indexGraph == 0" :class="{'opacity-50': indexGraph === 0}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg></button>
+
+            <button @click="changeGraph(1)" :disabled="indexGraph == 1" :class="{'opacity-50': indexGraph === 1}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg></button>
+          </div>
+          
+
           
         </div>
       </div>
@@ -162,11 +175,17 @@ import { ref, watch, nextTick, onMounted } from "vue";
 import Chart from "chart.js/auto";
 import { useRouter } from 'vue-router';
 
+const activeTab = ref("account"); // Onglet actif par défaut
+
 // PARTIE COMPTE
 const isConnected = ref(false);
 const username = ref("");
 const avatarActuel = ref("");
 const argent = ref(0);
+let partiesJouees;
+
+// PARTIE STATS DU COMPTE
+const nbParties = ref(0);
 
 onMounted(() => {
   fetchUserInfo();
@@ -207,13 +226,13 @@ const fetchUserInfo = async () => {
 
     // Vérification de la réponse et mise à jour des données utilisateur
     if (response.data) {
-      console.log(response.data)
       const { username: fetchedUsername, argent: fetchedArgent, avatar } = response.data;
+      partiesJouees = response.data.partiesJouees;
 
       isConnected.value = true;
       username.value = fetchedUsername; // Stockage du nom d'utilisateur
       argent.value = fetchedArgent;     // Stockage du montant d'argent
-      nbParties.value = response.data.partiesJouees
+      nbParties.value = response.data.partiesJouees.length
 
       // Validation et initialisation de l'avatar actuel
       const fetchedAvatar = `/img/${avatar}`;
@@ -228,6 +247,7 @@ const fetchUserInfo = async () => {
     console.error("Erreur lors du chargement des informations utilisateur :", error);
     isConnected.value = false;
   }
+
 };
 
 // États pour le changement de mot de passe
@@ -314,23 +334,28 @@ const logout = () => {
 };
 
 
-//TODO : changer tout ça par des vraies valeurs
-const activeTab = ref("account"); // Onglet actif par défaut
-const nbParties = ref(3); // Exemple de données
-const recordModeInfini = ref(10); // Exemple de données
-
-// Données pour le graphique
-const categories = ref(["History", "Science", "Entertainment", "Sports", "Geography"]);
-const categoryData = ref([25, 35, 15, 10, 15]); // Nombre de parties par catégorie
+//PARTIE STATISTIQUES
+const recordModeInfini = ref(0); // Nombre record pour le mode "infini"
+let indexGraph = 0;
+const graphTitle = ref("");
 
 // Création du graphique -> catégories
 const quizChart = ref(null);
 let chartInstance = null; // Garde une instance du graphique pour éviter les doublons
+const palette = [
+  "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40", "#8DFF33", "#33FFBD",
+  "#D633FF", "#FFD633", "#338FFF", "#33FF57", "#FF3366", "#8033FF", "#33FFFF",
+]; //couleurs utilisés pour les graphiques
+
+const changeGraph = async (increment) => {
+  indexGraph += increment;
+  console.log(indexGraph)
+  await renderChart();
+}
 
 const renderChart = async () => {
   // Attendre que le DOM soit mis à jour avec nextTick
   await nextTick();
-
   if (!quizChart.value) {
     console.error("Canvas element not found!");
     return;
@@ -343,53 +368,109 @@ const renderChart = async () => {
     chartInstance.destroy();
   }
 
-  // Créer un nouveau graphique
+  switch (indexGraph) {
+    case 0:
+      createCategoriePie(ctx);
+      break;
+    case 1:
+      createRecordBar(ctx);
+      break;
+  }
+
+  
+  
+};
+
+function createCategoriePie(ctx) {
+  graphTitle.value = "Your most played categories"
+  //Calcul des catégories
+  const repartitionCategories = partiesJouees.reduce((acc, partie) => {
+      const categorie = partie.categorie;
+      acc[categorie] = (acc[categorie] || 0) + 1;
+      return acc;
+    }, {});
+    const categories = Object.keys(repartitionCategories);
+    const counts = Object.values(repartitionCategories);
+    // Étendre la palette au nombre de catégories
+    const extendedPalette = Array.from({ length: categories.length }, (_, i) => palette[i % palette.length]);
+
+    //Créer un nouveau graphique
+    chartInstance = new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: categories,
+        datasets: [
+          {
+            data: counts,
+            backgroundColor: extendedPalette,
+            hoverOffset: 4,
+            borderWidth: 0
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+      },
+    });
+}
+
+function createRecordBar(ctx) {
+  graphTitle.value = "Record of correct answers by category"
+  const recordsParCategorie = partiesJouees.reduce((acc, partie) => {
+    const categorie = partie.categorie;
+    acc[categorie] = Math.max(acc[categorie] || 0, partie.nbBonnesReponses);
+    return acc;
+  }, {});
+  const categoriesRecord = Object.keys(recordsParCategorie);
+  const records = Object.values(recordsParCategorie);
   chartInstance = new Chart(ctx, {
-    type: "pie",
+    type: 'bar',
     data: {
-      labels: categories.value,
-      datasets: [
-        {
-          data: categoryData.value,
-          backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
-          hoverOffset: 4,
-          borderWidth: 0
-        },
-      ],
+      labels: categoriesRecord,
+      datasets: [{
+        label: 'Record de Bonnes Réponses',
+        data: records, 
+        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+        ],
+        borderWidth: 1,
+      }]
     },
     options: {
       responsive: true,
-      plugins: {
-        legend: {
-          position: "left",
-          align: "start",
-          labels: {
-            margin: 50,
-          },
-        },
-        title: {
-          display: true,
-          text: "Your most played categories",
-          align: "end",
-          font: {
-            size: 24,
-          }
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
         },
       },
+      plugins: {
+        legend: {
+          display: false, // Masquer la légende
+        },
+      }
     },
   });
-};
+}
 
 // Regarder les changements d'onglet et rendre le graphique
 watch(activeTab, async (newTab) => {
   if (newTab === "stats") {
     await renderChart();
   }
+  //Chargement des autres statistiques
+  const partiesModeInfini = partiesJouees.filter(partie => partie.nbQuestions === -1);
+  recordModeInfini.value = partiesModeInfini.reduce((max, partie) => {
+    return partie.nbBonnesReponses > max ? partie.nbBonnesReponses : max;
+  }, 0) + 3; //comme il y a trois vies, le record est la question "nbBonnesReponses + 3"
 });
 
 </script>
 
 
 <style scoped>
-/* Ajoutez du style personnalisé si nécessaire */
 </style>

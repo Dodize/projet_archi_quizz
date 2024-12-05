@@ -187,7 +187,8 @@ const nbQuestionsParAPI = 10; //nombre de tirages de questions a chaque appel AP
 const question = ref(""); // Question en cours
 const reponses = ref([]); // Reponses en cours
 const piecesIndice = ref(3); //TODO : faire le lien avec le compte
-let nombreBonneReponses = 0; // permet de calculer le gain des pièces indice
+let nbIndicesDepenses = 0; // nombre d'indices dépensés dans la partie
+let nombreBonneReponses = 0; // permet de calculer le gain des pièces indice et de faire des statistiques de fin de partie
 
 let questionsList; //Liste des questions chargées depuis l'API
 let questionEnCours = 0; //Indice de la question en cours dans la liste
@@ -252,14 +253,36 @@ const depenserIndice = () => {
   if (reponses.value.length == reponsesRetireesIndex.value.length + 1) {
     affichageBoutonIndice.value = false;
   }
+  nbIndicesDepenses += 1;
 }
 
 //**Watcher** pour surveiller heartsRemaining et rediriger si la valeur atteint 0
 watch(heartsRemaining, (newVal) => {
     if (newVal <= 0) {
-      store.gameOverReason = 'hearts',
-      store.nbQuestionsRight = nbQuestionsQuizz,
+      store.gameOverReason = 'hearts';
+      store.nbQuestionsRight = nbQuestionsQuizz;
       router.push('/GameOver');
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log("Token non trouvé");
+        isConnected.value = false;
+        return;
+      }
+
+      axios.post(
+      `${import.meta.env.VITE_API_URL}/partie`,
+      {
+        nbQuestions: nbQuestionsQuizz == Infinity ? -1 : nbQuestionsQuizz,
+        nbBonnesReponses: nombreBonneReponses,
+        nbIndices: nbIndicesDepenses,
+        categorie: store.categoryName
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   }
 });
 
@@ -304,10 +327,11 @@ const questionSuivante = () => {
     }
 
   } else {
-      store.gameOverReason = 'questions',
-      store.nbQuestionsRight = nbQuestionsQuizz,
+      store.gameOverReason = 'questions';
+      store.nbQuestionsRight = nbQuestionsQuizz;
       router.push('/GameOver');
-}
+      
+  }
 }
 
 // Chargement de nouvelles questions lorsque le "stock" est épuisé

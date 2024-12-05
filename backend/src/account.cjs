@@ -86,7 +86,9 @@ router.get("/user-informations", async (req, res) => {
           select: {
             id: true,
             nbQuestions: true,
+            nbBonnesReponses: true,
             indicesUtilises: true,
+            categorie: true
           },
         },
       },
@@ -138,8 +140,20 @@ router.post('/update-avatar', authenticateJWT, async (req, res) => {
   }
 });
 
+// Partie statistiques de la partie
+router.post('/partie', authenticateJWT, async (req, res) => {
+  const partieBD = await prismaClient.partie.create({
+    data: {
+      joueurId: req.user.id,
+      nbQuestions: req.body.nbQuestions,
+      nbBonnesReponses: req.body.nbBonnesReponses,
+      indicesUtilises: req.body.nbIndices,
+      categorie: req.body.categorie
+    },
+  });
+  res.json({ message: "Data saved", partieBD });
+});
 
-// Route pour changer l'avatar
-router.get
+
 
 module.exports = router;
