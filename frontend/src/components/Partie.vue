@@ -236,7 +236,7 @@ const masquerPopupIndice = () => {
 }
 
 // Depense d'un indice (affecte le nombre de pièces et l'affichage des réponses)
-const depenserIndice = () => {
+const depenserIndice = async() => {
   affichagePopupIndice.value = false;
   if (reponses.value.length == 2) {
     piecesIndice.value -= 3;
@@ -251,6 +251,19 @@ const depenserIndice = () => {
   reponsesRetireesIndex.value.push(tirage);
   if (reponses.value.length == reponsesRetireesIndex.value.length + 1) {
     affichageBoutonIndice.value = false;
+  }
+
+  // Mise à jour en base de données de manière asynchrone
+  try {
+    await axios.post(`${import.meta.env.VITE_API_URL}/update-indices`, {
+      indices: piecesIndice.value,
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour des indices :", error);
   }
 }
 
