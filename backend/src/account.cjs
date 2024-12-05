@@ -175,9 +175,9 @@ router.post('/update-avatar', authenticateJWT, async (req, res) => {
 
 // Route pour changer le nombre d'indices
 router.post('/update-indices', authenticateJWT, async (req, res) => {
-  let { nbIndices } = req.body;
+  let { indices } = req.body;
   
-  if (!nbIndices) {
+  if (!indices) {
     return res.status(400).json({ error: "Number of hints required" });
   }
 
@@ -194,7 +194,7 @@ router.post('/update-indices', authenticateJWT, async (req, res) => {
     // Mettre à jour l'avatar dans la base de données
     const updatedUser = await prismaClient.joueur.update({
       where: { id: user.id },
-      data: { argent : nbIndices },
+      data: { argent : indices },
     });
 
     res.json({

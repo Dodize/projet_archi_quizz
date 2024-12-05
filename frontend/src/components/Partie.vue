@@ -277,27 +277,46 @@ watch(heartsRemaining, (newVal) => {
 });
 
 // Passage à la question suivante après visualisation des réponses
-const questionSuivante = () => {
+const questionSuivante = async() => {
   affichageBoutonIndice.value = true;
   //incrementation nb bonnes reponses
   if (questionsList[questionEnCours].correct_answer == selectedReponse && reponsesRetireesIndex.value.length == 0) {
     nombreBonneReponses += 1;
+    let nbIndicesmodifie = false;
     switch (difficulteChoisie) {
       case "easy":
         if (nombreBonneReponses % 8 == 0) {
           piecesIndice.value += 1;
+          nbIndicesmodifie = true;
         }
         break;
       case "medium":
         if (nombreBonneReponses % 5 == 0) {
           piecesIndice.value += 1;
+          nbIndicesmodifie = true;
         }
         break;
       case "hard":
         if (nombreBonneReponses % 3 == 0) {
           piecesIndice.value += 1;
+          nbIndicesmodifie = true;
         }
         break;
+    }
+
+    if (nbIndicesmodifie) {
+      // Mise à jour en base de données de manière asynchrone
+      try {
+        await axios.post(`${import.meta.env.VITE_API_URL}/update-indices`, {
+          indices: piecesIndice.value,
+        }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour des indices :", error);
+      }
     }
   }
   selectedReponse = null;
