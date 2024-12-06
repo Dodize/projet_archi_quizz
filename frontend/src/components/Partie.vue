@@ -274,15 +274,19 @@ watch(heartsRemaining, (newVal) => {
     if (newVal <= 0) {
       store.gameOverReason = 'hearts';
       store.nbQuestionsRight = nbQuestionsQuizz;
-      router.push('/GameOver');
-      const token = localStorage.getItem("token");
+      enregistrerPartie();
+      router.push('/GameOver');     
+  }
+});
+
+function enregistrerPartie() {
+  const token = localStorage.getItem("token");
       if (!token) {
         console.log("Mode non connecté");
         isConnected.value = false;
         return;
       }
-
-      axios.post(
+  axios.post(
       `${import.meta.env.VITE_API_URL}/partie`,
       {
         nbQuestions: nbQuestionsQuizz == Infinity ? -1 : nbQuestionsQuizz,
@@ -296,8 +300,7 @@ watch(heartsRemaining, (newVal) => {
         },
       }
     );
-  }
-});
+}
 
 // Passage à la question suivante après visualisation des réponses
 const questionSuivante = async() => {
@@ -358,6 +361,7 @@ const questionSuivante = async() => {
   } else {
       store.gameOverReason = 'questions';
       store.nbQuestionsRight = nbQuestionsQuizz;
+      enregistrerPartie();
       router.push('/GameOver');
       
   }
