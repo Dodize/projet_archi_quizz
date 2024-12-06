@@ -260,7 +260,15 @@ const passwordMessageType = ref("");
 
 // Fonction pour changer le mot de passe
 const changePassword = async () => {
-  // Vérification du nouveau password
+  // Vérification du nouveau mot de passe
+  // Format
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,32}$/;
+  if (!passwordRegex.test(newPassword.value)) {
+    passwordMessage.value = "The password must contain at least 1 uppercase letter, 1 lowercase letter, 1 special character, and be between 8 and 32 characters long.";
+    passwordMessageType.value = "error";
+    return;
+  }
+  // Confirmation
   if (newPassword.value !== confirmPassword.value) {
     passwordMessage.value = "Not the same passwords.";
     passwordMessageType.value = "error";
@@ -268,7 +276,7 @@ const changePassword = async () => {
   }
 
   try {
-    // Modification du password en base de données
+    // Modification du mot de passe en base de données
     await axios.post(
       `${import.meta.env.VITE_API_URL}/change-password`,
       {
