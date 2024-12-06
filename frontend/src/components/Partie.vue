@@ -150,6 +150,7 @@ const fetchUserInfo = async () => {
       isConnected.value = true;
       username.value = response.data.username;
       avatar.value = `/img/${response.data.avatar}` || "/img/default-avatar.png";
+      piecesIndice.value = response.data.argent;
     } else {
       isConnected.value = false;
     }
@@ -186,9 +187,9 @@ const nbQuestionsParAPI = 10; //nombre de tirages de questions a chaque appel AP
 
 const question = ref(""); // Question en cours
 const reponses = ref([]); // Reponses en cours
-const piecesIndice = ref(3); //TODO : faire le lien avec le compte
+const piecesIndice = ref(0);
 let nbIndicesDepenses = 0; // nombre d'indices dépensés dans la partie
-let nombreBonneReponses = 0; // permet de calculer le gain des pièces indice et de faire des statistiques de fin de partie
+let nombreBonneReponses = 0; // permet de calculer le gain des pièces indice
 
 let questionsList; //Liste des questions chargées depuis l'API
 let questionEnCours = 0; //Indice de la question en cours dans la liste
@@ -237,7 +238,7 @@ const masquerPopupIndice = () => {
 }
 
 // Depense d'un indice (affecte le nombre de pièces et l'affichage des réponses)
-const depenserIndice = () => {
+const depenserIndice = async() => {
   affichagePopupIndice.value = false;
   if (reponses.value.length == 2) {
     piecesIndice.value -= 3;
@@ -254,6 +255,19 @@ const depenserIndice = () => {
     affichageBoutonIndice.value = false;
   }
   nbIndicesDepenses += 1;
+
+  // Mise à jour en base de données de manière asynchrone
+  try {
+    await axios.post(`${import.meta.env.VITE_API_URL}/update-indices`, {
+      indices: piecesIndice.value,
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour des indices :", error);
+  }
 }
 
 //**Watcher** pour surveiller heartsRemaining et rediriger si la valeur atteint 0
@@ -292,22 +306,41 @@ const questionSuivante = async() => {
   //incrementation nb bonnes reponses
   if (questionsList[questionEnCours].correct_answer == selectedReponse && reponsesRetireesIndex.value.length == 0) {
     nombreBonneReponses += 1;
+    let nbIndicesmodifie = false;
     switch (difficulteChoisie) {
       case "easy":
         if (nombreBonneReponses % 8 == 0) {
           piecesIndice.value += 1;
+          nbIndicesmodifie = true;
         }
         break;
       case "medium":
         if (nombreBonneReponses % 5 == 0) {
           piecesIndice.value += 1;
+          nbIndicesmodifie = true;
         }
         break;
       case "hard":
         if (nombreBonneReponses % 3 == 0) {
           piecesIndice.value += 1;
+          nbIndicesmodifie = true;
         }
         break;
+    }
+
+    if (nbIndicesmodifie) {
+      // Mise à jour en base de données de manière asynchrone
+      try {
+        await axios.post(`${import.meta.env.VITE_API_URL}/update-indices`, {
+          indices: piecesIndice.value,
+        }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour des indices :", error);
+      }
     }
   }
   selectedReponse = null;
