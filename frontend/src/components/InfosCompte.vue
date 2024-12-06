@@ -213,12 +213,12 @@ const fetchUserInfo = async () => {
       return;
     }
 
-    // Requête GET vers l'API pour récupérer les informations utilisateur
+    // Récupération des informations utilisateur
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/user-informations`, // Remplacer par l'endpoint réel
+      `${import.meta.env.VITE_API_URL}/user-informations`, 
       {
         headers: {
-          Authorization: `Bearer ${token}`, // Ajout du token dans les headers
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -229,15 +229,15 @@ const fetchUserInfo = async () => {
       partiesJouees = response.data.partiesJouees;
 
       isConnected.value = true;
-      username.value = fetchedUsername; // Stockage du nom d'utilisateur
-      argent.value = fetchedArgent;     // Stockage du montant d'argent
+      username.value = fetchedUsername;
+      argent.value = fetchedArgent;
       nbParties.value = response.data.partiesJouees.length;
 
-      // Validation et initialisation de l'avatar actuel
+      // Initialisation de l'avatar
       const fetchedAvatar = `/img/${avatar}`;
       avatarActuel.value = avatarsDisponibles.includes(fetchedAvatar)
         ? fetchedAvatar
-        : "/img/default-avatar.png"; // Avatar par défaut si invalide
+        : "/img/default-avatar.png";
     } else {
       console.log("Données utilisateur non trouvées");
       isConnected.value = false;
@@ -258,7 +258,9 @@ const token = localStorage.getItem("token");
 const passwordMessage = ref("");
 const passwordMessageType = ref("");
 
+// Fonction pour changer le mot de passe
 const changePassword = async () => {
+  // Vérification du nouveau password
   if (newPassword.value !== confirmPassword.value) {
     passwordMessage.value = "Not the same passwords.";
     passwordMessageType.value = "error";
@@ -266,6 +268,7 @@ const changePassword = async () => {
   }
 
   try {
+    // Modification du password en base de données
     await axios.post(
       `${import.meta.env.VITE_API_URL}/change-password`,
       {
@@ -299,8 +302,10 @@ const selectionnerAvatar = (avatar) => {
 const avatarMessage = ref("");
 const avatarMessageType = ref("");
 
+// Fonction pour changer l'avatar
 const validerChangementAvatar = async () => {
   try {
+    // Modification de l'avatar en base de données
     await axios.post(
       `${import.meta.env.VITE_API_URL}/update-avatar`,
       { avatar: avatarActuel.value },

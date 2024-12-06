@@ -129,20 +129,19 @@ const avatar = ref("");
 // Fonction pour charger les informations utilisateur
 const fetchUserInfo = async () => {
   try {
-    // Récupération du token depuis le localStorage
+    // Récupération du token
     const token = localStorage.getItem('token');
 
-    // Vérifiez si un token existe
     if (!token) {
       console.log("Token non trouvé");
       isConnected.value = false;
       return;
     }
 
-    // Appel API avec le token dans les headers
+    // Appel à l'api pour récupérer les infos de l'utilisateur
     const response = await axios.get(`${import.meta.env.VITE_API_URL}/user-informations`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Ajout du token dans le header Authorization
+        Authorization: `Bearer ${token}`,
       },
     });
 

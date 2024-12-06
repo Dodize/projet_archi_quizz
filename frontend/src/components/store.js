@@ -7,6 +7,4 @@ export const store = reactive({
   nbQuestions: 0, // Nombre de questions par quizz
   gameOverReason: 'hearts', // raison de la perte de la partie
   nbQuestionsRight: 0, // nombre de question répondu dans la partie
-
-
 });

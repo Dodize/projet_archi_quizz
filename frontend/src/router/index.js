@@ -1,4 +1,3 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import SelectionMenu from '../components/SelectionnerMenu.vue';
 import Partie from '../components/Partie.vue';

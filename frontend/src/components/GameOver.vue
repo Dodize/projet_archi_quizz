@@ -9,7 +9,7 @@
         {{ message }}
       </p>
       
-      <!-- Boutons de rejouer et retour au menu -->
+      <!-- Boutons rejouer et retour au menu -->
       <div class="flex justify-center space-x-4 mt-6">
         <router-link to="/game" class="flex-1 max-w-xs">
           <button class="w-full px-4 py-2 text-white font-semibold rounded-md bg-[#007bff] hover:bg-blue-600">
