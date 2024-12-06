@@ -462,7 +462,7 @@ function createRecordBar(ctx) {
     data: {
       labels: categoriesRecord,
       datasets: [{
-        label: 'Record de Bonnes Réponses',
+        label: 'Record of correct answers',
         data: records, 
         backgroundColor: extendedPalette,
         borderWidth: 1,
