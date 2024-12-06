@@ -129,7 +129,7 @@ const avatar = ref("");
 // Fonction pour charger les informations utilisateur
 const fetchUserInfo = async () => {
   try {
-    // Récupération du token depuis le localStorage (ou autre méthode que vous utilisez)
+    // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
 
     // Vérifiez si un token existe

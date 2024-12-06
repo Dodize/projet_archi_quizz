@@ -1,10 +1,12 @@
 <template>
   <div class="flex items-center justify-center min-h-screen">
     <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+      <!-- Titre, dépend du mode create an account ou login -->
       <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">
         {{ isRegisterMode ? 'Create an account' : 'Login' }}
       </h2>
       <form @submit.prevent="submitForm" class="space-y-4">
+        <!-- Champ username -->
         <div>
           <label for="username" class="block mb-2 font-medium text-gray-700">Username</label>
           <input
@@ -17,6 +19,7 @@
           />
         </div>
 
+        <!-- Champ password -->
         <div>
           <label for="password" class="block mb-2 font-medium text-gray-700">Password</label>
           <input
@@ -29,6 +32,7 @@
           />
         </div>
 
+        <!-- Bouton submit -->
         <button
           type="submit"
           class="w-full py-2 mt-4 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -36,8 +40,10 @@
           {{ isRegisterMode ? 'Sign up' : 'Login' }}
         </button>
       </form>
+      <!-- Messages d'erreur/succès -->
       <p v-if="errorMessage" class="mt-4 text-center text-red-500">{{ errorMessage }}</p>
       <p v-if="successMessage" class="mt-4 text-center text-green-500">{{ successMessage }}</p>
+      <!-- Permet de switcher de mode create an account/login -->
       <p class="mt-4 text-center text-gray-600">
         {{ isRegisterMode ? 'Already have an account?' : "Don't have an account?" }}
         <button
@@ -68,7 +74,7 @@ export default {
   methods: {
     async submitForm() {
 
-      // Vérification du mot de passe en mode création de compte
+      // Vérification du format du mot de passe en mode création de compte
       if (this.isRegisterMode && !this.isPasswordValid(this.password)) {
         this.errorMessage = "The password must contain at least 1 uppercase letter, 1 lowercase letter, 1 special character, and be between 8 and 32 characters long.";
         this.successMessage = "";
@@ -82,7 +88,7 @@ export default {
           const response = await axios.post(`${import.meta.env.VITE_API_URL}/register`, {
             username: this.username,
             password: this.password,
-            argent: 0, // à voir si on lui met de l'argent
+            argent: 0,
             avatar: "default-avatar.png",
           });
 
@@ -100,6 +106,7 @@ export default {
           this.successMessage = `Welcome, ${this.username}! Login successful.`;
           this.errorMessage = "";
 
+          // Enregistrement du token de connexion
           localStorage.setItem('token', response.data.token);
         }
 
@@ -107,7 +114,6 @@ export default {
         this.username = "";
         this.password = "";
       } catch (error) {
-        // Affiche le message du back ou un message par défaut sinon
         this.errorMessage = error.response?.data?.error || 
                             (this.isRegisterMode ? "Error creating account" : "Login failed");
         this.successMessage = "";
@@ -129,6 +135,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-</style>

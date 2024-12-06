@@ -47,11 +47,11 @@
           </div>
           <!-- Column 2 -->
           <div>
-            <h3 class="font-bold mt-4">Hint</h3>
+            <h3 class="font-bold">Hint</h3>
             <p>
               You can use 1 coin to grey out a wrong answer. Except for true/false, were it cost 3 because using it allows you to get the right answer.
             </p>
-            <h3 class="font-bold">Login</h3>
+            <h3 class="font-bold mt-4">Login</h3>
             <p>
               To access statistics and save coins, you need to log in. .
             </p>

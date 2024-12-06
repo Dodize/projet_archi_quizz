@@ -18,7 +18,7 @@ const authenticateJWT = (req, res, next) => {
       if (err) {
         return res.status(403).json({ error: 'Unauthorized' });
       }
-      req.user = user; // Stocker les infos de l'utilisateur dans req.user
+      req.user = user;
       next();
     });
   } else {
@@ -66,18 +66,13 @@ router.post('/change-password', authenticateJWT, async (req, res) => {
   }
 });
 
-// Récupère les informations du joueur
-router.get("/user-informations", async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+// Route pour récupérer les informations du joueur
+router.get("/user-informations", authenticateJWT, async (req, res) => {
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+    // Récupération des infos en bd à partir de l'id du joueur
     const user = await prismaClient.joueur.findUnique({
-      where: { id: decoded.id },
+      where: { id: req.user.id },
       select: {
         username: true,
         argent: true,
@@ -95,8 +90,8 @@ router.get("/user-informations", async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-
     res.json(user);
+
   } catch (error) {
     console.error("An error occurred during the recuperation of the profile :", error);
     res.status(500).json({ error: "Server error" });
@@ -113,18 +108,9 @@ router.post('/update-avatar', authenticateJWT, async (req, res) => {
   }
 
   try {
-    // Récupérer l'utilisateur via l'ID contenu dans le token
-    const user = await prismaClient.joueur.findUnique({
-      where: { id: req.user.id },
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found." });
-    }
-
     // Mettre à jour l'avatar dans la base de données
     const updatedUser = await prismaClient.joueur.update({
-      where: { id: user.id },
+      where: { id: req.user.id },
       data: { avatar : avatar },
     });
 
@@ -132,41 +118,7 @@ router.post('/update-avatar', authenticateJWT, async (req, res) => {
       message: "Avatar changed successfully.",
       avatar: updatedUser.avatar,
     });
-  } catch (error) {
-    console.error("An error occurred while changing the avatar :", error);
-    res.status(500).json({ error: "An error occurred while changing the avatar." });
-  }
-});
 
-// Route pour changer l'avatar
-router.post('/update-avatar', authenticateJWT, async (req, res) => {
-  let { avatar } = req.body;
-  avatar = avatar.replace('/img/', '');
-  
-  if (!avatar) {
-    return res.status(400).json({ error: "Avatar required" });
-  }
-
-  try {
-    // Récupérer l'utilisateur via l'ID contenu dans le token
-    const user = await prismaClient.joueur.findUnique({
-      where: { id: req.user.id },
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found." });
-    }
-
-    // Mettre à jour l'avatar dans la base de données
-    const updatedUser = await prismaClient.joueur.update({
-      where: { id: user.id },
-      data: { avatar : avatar },
-    });
-
-    res.json({
-      message: "Avatar changed successfully.",
-      avatar: updatedUser.avatar,
-    });
   } catch (error) {
     console.error("An error occurred while changing the avatar :", error);
     res.status(500).json({ error: "An error occurred while changing the avatar." });
@@ -182,18 +134,9 @@ router.post('/update-indices', authenticateJWT, async (req, res) => {
   }
 
   try {
-    // Récupérer l'utilisateur via l'ID contenu dans le token
-    const user = await prismaClient.joueur.findUnique({
-      where: { id: req.user.id },
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found." });
-    }
-
-    // Mettre à jour l'avatar dans la base de données
+    // Mise à jour du nombre d'indices en base de données
     const updatedUser = await prismaClient.joueur.update({
-      where: { id: user.id },
+      where: { id: req.user.id },
       data: { argent : indices },
     });
 
@@ -201,6 +144,7 @@ router.post('/update-indices', authenticateJWT, async (req, res) => {
       message: "Number of hints changed successfully.",
       indices: updatedUser.argent,
     });
+    
   } catch (error) {
     console.error("An error occurred while changing the number of hints :", error);
     res.status(500).json({ error: "An error occurred while changing the number of hints." });

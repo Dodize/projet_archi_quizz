@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const prismaClient = new prisma();
 
-// Route pour création de compte
+// Route pour la création de compte
 router.post('/register', async (req, res) => {
   const { username, password, argent, avatar } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -39,17 +39,20 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Route pour connexion
+// Route pour la connexion
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   
   try {
     const player = await prismaClient.joueur.findUnique({ where: { username: username }, });
 
+    // Vérifie si le joueur existe
     if (!player) {
       return res.status(401).json({ error: "The user does not exist" });
+    // Vérifie si le mot de passe fourni est le bon
     } else if (!await bcrypt.compare(password, player.password)) {
       return res.status(401).json({ error: "Wrong password" });
+    // Si utilisateur existe et pwd correct, login avec création token
     } else {
         const token = jwt.sign(
           { id: player.id, username: player.username },

@@ -11,12 +11,12 @@ const PORT = 3001;
 dotenv.config();
 
 // Middleware
-app.use(cors()); // Permet toutes les origines
+app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
 // Routes
 app.use('/api', authRoutes);
-app.use(express.json());
 app.use('/api', account);
 
 app.listen(PORT, () => {
