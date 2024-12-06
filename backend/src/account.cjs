@@ -81,7 +81,9 @@ router.get("/user-informations", authenticateJWT, async (req, res) => {
           select: {
             id: true,
             nbQuestions: true,
+            nbBonnesReponses: true,
             indicesUtilises: true,
+            categorie: true
           },
         },
       },
@@ -110,6 +112,47 @@ router.post('/update-avatar', authenticateJWT, async (req, res) => {
   try {
     // Mettre à jour l'avatar dans la base de données
     const updatedUser = await prismaClient.joueur.update({
+      where: { id: user.id },
+      data: { avatar : avatar },
+    });
+
+    res.json({
+      message: "Avatar changed successfully.",
+      avatar: updatedUser.avatar,
+    });
+  } catch (error) {
+    console.error("An error occurred while changing the avatar :", error);
+    res.status(500).json({ error: "An error occurred while changing the avatar." });
+  }
+});
+
+// Partie statistiques de la partie
+router.post('/partie', authenticateJWT, async (req, res) => {
+  const partieBD = await prismaClient.partie.create({
+    data: {
+      joueurId: req.user.id,
+      nbQuestions: req.body.nbQuestions,
+      nbBonnesReponses: req.body.nbBonnesReponses,
+      indicesUtilises: req.body.nbIndices,
+      categorie: req.body.categorie
+    },
+  });
+  res.json({ message: "Data saved", partieBD });
+});
+
+
+// Route pour changer l'avatar
+router.post('/update-avatar', authenticateJWT, async (req, res) => {
+  let { avatar } = req.body;
+  avatar = avatar.replace('/img/', '');
+  
+  if (!avatar) {
+    return res.status(400).json({ error: "Avatar required" });
+  }
+
+  try {
+    // Récupérer l'utilisateur via l'ID contenu dans le token
+    const user = await prismaClient.joueur.findUnique({
       where: { id: req.user.id },
       data: { avatar : avatar },
     });

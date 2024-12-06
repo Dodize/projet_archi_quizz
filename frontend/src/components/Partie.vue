@@ -188,6 +188,7 @@ const nbQuestionsParAPI = 10; //nombre de tirages de questions a chaque appel AP
 const question = ref(""); // Question en cours
 const reponses = ref([]); // Reponses en cours
 const piecesIndice = ref(0);
+let nbIndicesDepenses = 0; // nombre d'indices dépensés dans la partie
 let nombreBonneReponses = 0; // permet de calculer le gain des pièces indice
 
 let questionsList; //Liste des questions chargées depuis l'API
@@ -253,6 +254,7 @@ const depenserIndice = async() => {
   if (reponses.value.length == reponsesRetireesIndex.value.length + 1) {
     affichageBoutonIndice.value = false;
   }
+  nbIndicesDepenses += 1;
 
   // Mise à jour en base de données de manière asynchrone
   try {
@@ -271,9 +273,30 @@ const depenserIndice = async() => {
 //**Watcher** pour surveiller heartsRemaining et rediriger si la valeur atteint 0
 watch(heartsRemaining, (newVal) => {
     if (newVal <= 0) {
-      store.gameOverReason = 'hearts',
-      store.nbQuestionsRight = nbQuestionsQuizz,
+      store.gameOverReason = 'hearts';
+      store.nbQuestionsRight = nbQuestionsQuizz;
       router.push('/GameOver');
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log("Mode non connecté");
+        isConnected.value = false;
+        return;
+      }
+
+      axios.post(
+      `${import.meta.env.VITE_API_URL}/partie`,
+      {
+        nbQuestions: nbQuestionsQuizz == Infinity ? -1 : nbQuestionsQuizz,
+        nbBonnesReponses: nombreBonneReponses,
+        nbIndices: nbIndicesDepenses,
+        categorie: store.categoryName
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   }
 });
 
@@ -327,20 +350,18 @@ const questionSuivante = async() => {
   if (questionEnCours < nbQuestionsQuizz - 1) {
     questionEnCours += 1;
     if (questionsList.length == questionEnCours) {
-      //on efface en attendant le chargement
-      question.value = null;
-      reponses.value = null;
       //on charge les 10 questions suivantes
-      getQuestions();
+      await getQuestions();
     } else {
       majQuestion();
     }
 
   } else {
-      store.gameOverReason = 'questions',
-      store.nbQuestionsRight = nbQuestionsQuizz,
+      store.gameOverReason = 'questions';
+      store.nbQuestionsRight = nbQuestionsQuizz;
       router.push('/GameOver');
-}
+      
+  }
 }
 
 // Chargement de nouvelles questions lorsque le "stock" est épuisé
