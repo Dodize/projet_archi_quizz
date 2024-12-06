@@ -264,7 +264,7 @@ watch(heartsRemaining, (newVal) => {
       router.push('/GameOver');
       const token = localStorage.getItem("token");
       if (!token) {
-        console.log("Token non trouvé");
+        console.log("Mode non connecté");
         isConnected.value = false;
         return;
       }
@@ -287,7 +287,7 @@ watch(heartsRemaining, (newVal) => {
 });
 
 // Passage à la question suivante après visualisation des réponses
-const questionSuivante = () => {
+const questionSuivante = async() => {
   affichageBoutonIndice.value = true;
   //incrementation nb bonnes reponses
   if (questionsList[questionEnCours].correct_answer == selectedReponse && reponsesRetireesIndex.value.length == 0) {
@@ -317,11 +317,8 @@ const questionSuivante = () => {
   if (questionEnCours < nbQuestionsQuizz - 1) {
     questionEnCours += 1;
     if (questionsList.length == questionEnCours) {
-      //on efface en attendant le chargement
-      question.value = null;
-      reponses.value = null;
       //on charge les 10 questions suivantes
-      getQuestions();
+      await getQuestions();
     } else {
       majQuestion();
     }

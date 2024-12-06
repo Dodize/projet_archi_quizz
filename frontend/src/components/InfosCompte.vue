@@ -1,6 +1,5 @@
 <template>
   <div class="flex justify-center">
-    <!-- Conteneur principal -->
     <div class="flex mt-2.5 bg-boxGrey p-3 py-7 rounded-2xl w-4/6 shadow-2xl h-128 mx-4">
       <!-- Menu latéral -->
       <div class="w-1/4 h-full p-4 rounded-l-2xl">
@@ -27,6 +26,7 @@
       <!-- Contenu principal -->
       <div class="w-3/4 overflow-y-auto px-6">
         <div v-if="activeTab === 'account'">
+
           <!-- Partie compte -->
           <div class="flex flex-col items-center justify-center min-h-screen">
             <div class="w-full max-w-md p-6 rounded-lg">
@@ -138,31 +138,32 @@
             </div>
           </div>
         </div>
+
+        <!-- Partie Stats -->
         <div v-else-if="activeTab === 'stats'">
           <h2 class="text-3xl font-bold mb-4">Game Statistics</h2>
           <p class="text-base">Total Games Played: {{ nbParties }}</p>
-          <p class="text-base" :class="recordModeInfini == 0 ? 'hidden' : 'block'">Record for infinite mode: {{ recordModeInfini }}</p>
+          <p class="text-base">Record for infinite mode: {{ recordModeInfini }}</p>
 
           <!-- Chart -->
-          <h3 class="text-2xl mt-5 text-center font-bold" :class="{'hidden': partiesJouees.length === 0}" v-html="graphTitle"></h3>
-          <div class="flex  justify-center" id="chartLegendContainer">
-            <div class="w-1/2">
-              <canvas class="h-72" ref="quizChart"></canvas>
+           <div :class="{'hidden': partiesJouees.length === 0}">
+            <h3 class="text-2xl mt-5 text-center font-bold" v-html="graphTitle"></h3>
+            <div class="flex  justify-center">
+              <div class="w-1/2">
+                <canvas class="h-72" ref="quizChart"></canvas>
+              </div>
+            </div>
+            <!-- Fleches pour parcourir les graphs -->
+            <div class="flex justify-between mx-8">
+              <button @click="changeGraph(-1)" :disabled="indexGraph == 0" :class="{'opacity-50': indexGraph == 0}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg></button>
+
+              <button @click="changeGraph(1)" :disabled="indexGraph == 2" :class="{'opacity-50': indexGraph == 2}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg></button>
             </div>
           </div>
-          <!-- Fleches pour parcourir les graphs -->
-          <div class="flex justify-between mx-8">
-            <button @click="changeGraph(-1)" :disabled="indexGraph == 0" :class="{'opacity-50': indexGraph === 0}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg></button>
-
-            <button @click="changeGraph(1)" :disabled="indexGraph == 1" :class="{'opacity-50': indexGraph === 1}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg></button>
-          </div>
-          
-
-          
         </div>
       </div>
     </div>
@@ -183,8 +184,6 @@ const username = ref("");
 const avatarActuel = ref("");
 const argent = ref(0);
 let partiesJouees;
-
-// PARTIE STATS DU COMPTE
 const nbParties = ref(0);
 
 onMounted(() => {
@@ -232,7 +231,7 @@ const fetchUserInfo = async () => {
       isConnected.value = true;
       username.value = fetchedUsername; // Stockage du nom d'utilisateur
       argent.value = fetchedArgent;     // Stockage du montant d'argent
-      nbParties.value = response.data.partiesJouees.length
+      nbParties.value = response.data.partiesJouees.length;
 
       // Validation et initialisation de l'avatar actuel
       const fetchedAvatar = `/img/${avatar}`;
@@ -336,25 +335,26 @@ const logout = () => {
 
 //PARTIE STATISTIQUES
 const recordModeInfini = ref(0); // Nombre record pour le mode "infini"
-let indexGraph = 0;
-const graphTitle = ref("");
-
-// Création du graphique -> catégories
-const quizChart = ref(null);
+const indexGraph = ref(0);  // Indice du graphique affiché
+const graphTitle = ref(""); // Titre du graphique affiché
+const quizChart = ref(null);  // Graphique affiché
 let chartInstance = null; // Garde une instance du graphique pour éviter les doublons
+
+// Palette de couleurs pour les graphiques
 const palette = [
   "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40", "#8DFF33", "#33FFBD",
   "#D633FF", "#FFD633", "#338FFF", "#33FF57", "#FF3366", "#8033FF", "#33FFFF",
-]; //couleurs utilisés pour les graphiques
+];
 
+// Permet de changer le graphique affiché
 const changeGraph = async (increment) => {
-  indexGraph += increment;
-  console.log(indexGraph)
+  indexGraph.value += increment;
   await renderChart();
 }
 
+// Creation du graphique
 const renderChart = async () => {
-  // Attendre que le DOM soit mis à jour avec nextTick
+  // Attendre que le DOM soit mis à jour
   await nextTick();
   if (!quizChart.value) {
     console.error("Canvas element not found!");
@@ -368,21 +368,23 @@ const renderChart = async () => {
     chartInstance.destroy();
   }
 
-  switch (indexGraph) {
+  switch (indexGraph.value) {
     case 0:
       createCategoriePie(ctx);
       break;
     case 1:
       createRecordBar(ctx);
       break;
+    case 2:
+      createLineGraphHints(ctx);
+      break;
   }
-
-  
-  
 };
 
+// Creation du graphique sur les categories
 function createCategoriePie(ctx) {
-  graphTitle.value = "Your most played categories"
+  graphTitle.value = "Your most played categories";
+
   //Calcul des catégories
   const repartitionCategories = partiesJouees.reduce((acc, partie) => {
       const categorie = partie.categorie;
@@ -391,6 +393,7 @@ function createCategoriePie(ctx) {
     }, {});
     const categories = Object.keys(repartitionCategories);
     const counts = Object.values(repartitionCategories);
+
     // Étendre la palette au nombre de catégories
     const extendedPalette = Array.from({ length: categories.length }, (_, i) => palette[i % palette.length]);
 
@@ -411,12 +414,24 @@ function createCategoriePie(ctx) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              boxWidth: 10
+            },
+          }
+        }
       },
     });
 }
 
+// Creation du graphique sur les records par catégorie
 function createRecordBar(ctx) {
-  graphTitle.value = "Record of correct answers by category"
+  graphTitle.value = "Record of correct answers by category";
+
+  //Calcul des records
   const recordsParCategorie = partiesJouees.reduce((acc, partie) => {
     const categorie = partie.categorie;
     acc[categorie] = Math.max(acc[categorie] || 0, partie.nbBonnesReponses);
@@ -424,6 +439,11 @@ function createRecordBar(ctx) {
   }, {});
   const categoriesRecord = Object.keys(recordsParCategorie);
   const records = Object.values(recordsParCategorie);
+
+  // Étendre la palette au nombre de records
+  const extendedPalette = Array.from({ length: categoriesRecord.length }, (_, i) => palette[i % palette.length]);
+  
+  // Creation du nouveau graphique
   chartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -431,12 +451,7 @@ function createRecordBar(ctx) {
       datasets: [{
         label: 'Record de Bonnes Réponses',
         data: records, 
-        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-        ],
+        backgroundColor: extendedPalette,
         borderWidth: 1,
       }]
     },
@@ -450,27 +465,79 @@ function createRecordBar(ctx) {
       },
       plugins: {
         legend: {
-          display: false, // Masquer la légende
+          display: false,
         },
       }
     },
   });
 }
 
-// Regarder les changements d'onglet et rendre le graphique
+// Creation du graphique sur l'utilisation des indices
+function createLineGraphHints(ctx) {
+  graphTitle.value = "Hint Usage Over Games";
+  const indicesUtilises = partiesJouees.map(partie => partie.indicesUtilises);
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: Array.from({length: partiesJouees.length}, (_, index) => index + 1),
+      datasets: [{
+        data: indicesUtilises, 
+        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderWidth: 2, 
+        tension: 0.3,
+        pointRadius: 0, // Ne pas afficher les points
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false,
+        }
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Games',
+          }
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Usage of hints',
+          },
+          ticks: {
+            stepSize: 1,
+          },
+        },
+      },
+    },
+  });
+  
+  
+}
+
+// Regarder les changements d'onglet et creer le graphique
 watch(activeTab, async (newTab) => {
   if (newTab === "stats") {
     await renderChart();
   }
   //Chargement des autres statistiques
   const partiesModeInfini = partiesJouees.filter(partie => partie.nbQuestions === -1);
-  recordModeInfini.value = partiesModeInfini.reduce((max, partie) => {
+  //si le joueur n'a jamais fait de partie en mode infini, alors le record vaut 0
+  if(partiesModeInfini.length == 0) {
+    recordModeInfini.value = 0;
+  } else {
+    recordModeInfini.value = partiesModeInfini.reduce((max, partie) => {
     return partie.nbBonnesReponses > max ? partie.nbBonnesReponses : max;
   }, 0) + 3; //comme il y a trois vies, le record est la question "nbBonnesReponses + 3"
+  }
+  
 });
 
 </script>
 
-
-<style scoped>
-</style>
