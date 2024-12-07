@@ -4,12 +4,23 @@
         Welcome in Culture Quizz
       </h1>
       <!-- Bouton Connexion -->
-      <button
+      <div v-if="!isConnected">
+        <button
         class="btn font-bold py-2 px-4 bg-[#007bff] text-white rounded-md shadow-md hover:bg-blue-600 transition-all mb-4"
-        @click="goToConnection"
-      >
-        Connection
-      </button>
+        @click="goToConnection" >
+          Connection
+        </button>
+      </div>
+      <!-- Bouton Connexion -->
+      <div v-else>
+        <button
+        class="btn font-bold py-2 px-4 bg-[#007bff] text-white rounded-md shadow-md hover:bg-blue-600 transition-all mb-4"
+        @click="goToConnection" >
+          Account info
+        </button>
+      </div>
+
+
       <!-- Bouton pour le menu -->
       <button
         class="btn font-bold py-2 px-4 bg-[#ff1493] text-white rounded-md shadow-md hover:bg-[#de0078] transition-all mb-4"
@@ -69,14 +80,18 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
+  import axios from 'axios';
   
   // Initialisation du routeur
   const router = useRouter();
   
   // Gestion de la pop-up
   const showRules = ref(false);
+
+  // Pour savoir si l'utilisateur est connecté
+  const isConnected = ref(false);
   
   const openRulesPopup = () => {
     showRules.value = true;
@@ -88,12 +103,47 @@
   
   // Navigation
   const goToConnection = () => {
-    router.push('/connection');
+    if (isConnected.value) {
+      router.push("/account"); // Rediriger vers le compte utilisateur
+    } else {
+      router.push("/connection"); // Rediriger vers la page de connexion
+    }
   };
   
   const goToSelection = () => {
     router.push('/selectionMenu');
   };
+
+  // Fonction pour charger les informations utilisateur
+  const fetchUserInfo = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        isConnected.value = false;
+        return;
+      }
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/user-informations`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.data && response.data.username) {
+      isConnected.value = true;
+    } else {
+      isConnected.value = false;
+    }
+  } catch (error) {
+    console.error("Erreur lors du chargement des informations utilisateur :", error);
+    isConnected.value = false;
+  }
+};
+
+// Charger les informations utilisateur dès le montage
+onMounted(() => {
+  fetchUserInfo();
+});
+
   </script>
   
   <style scoped>

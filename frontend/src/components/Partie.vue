@@ -22,7 +22,7 @@
         <div class="flex items-center  bg-transparentRed w-36 border-amber-500 rounded-lg m-5 ml-0">
           <img src="/img/piece-de-monnaie.png" class="h-12" alt="Coin" />
           <div class="flex justify-center w-full">
-            <p class="ml-2" v-html="piecesIndice"></p>
+            <p class="ml-2" v-html="store.piecesIndice"></p>
           </div>
         </div>
       </div>
@@ -39,15 +39,15 @@
               <button type="button" @click="afficherReponse(reponse, index)"
                 class="px-6 py-3 text-lg rounded-3xl shadow-md duration-200 ease-linear transform border-2e mt-2 mb-2 text-white font-semibold w-72"
                 :class="{
-                  'bg-green-500 border-green-500': correctAnswerIndex === index && afficherReponseBool,
-                  'bg-red-500 border-red-500': mauvaiseReponseCliqueeIndex === index && afficherReponseBool,
-                  'bg-[#B0B0B0] border-[#B0B0B0]': (afficherReponseBool && index !== correctAnswerIndex && index !== mauvaiseReponseCliqueeIndex) || reponsesRetireesIndex.includes(index),
-                  'cursor-pointer transition-all hover:scale-110 hover:shadow-lg': !afficherReponseBool && !(reponsesRetireesIndex.includes(index)),
-                  'bg-[#007bff] border-white': index === 0 && !afficherReponseBool && !(reponsesRetireesIndex.includes(index)),
-                  'bg-[#ff1493] border-white': index === 1 && !afficherReponseBool && reponses.length == 4 && !(reponsesRetireesIndex.includes(index)),
-                  'bg-[#ff6700] border-white': index === 2 && !afficherReponseBool && !(reponsesRetireesIndex.includes(index)),
-                  'bg-[#32cd32] border-white': (index === 3 || (index === 1 && reponses.length == 2)) && !afficherReponseBool && !(reponsesRetireesIndex.includes(index)),
-                }" :disabled="afficherReponseBool === true || reponsesRetireesIndex.includes(index)" v-html="reponse">
+                  'bg-green-500 border-green-500': correctAnswerIndex === index && store.afficherReponseBool,
+                  'bg-red-500 border-red-500': store.mauvaiseReponseCliqueeIndex === index && store.afficherReponseBool,
+                  'bg-[#B0B0B0] border-[#B0B0B0]': (store.afficherReponseBool && index !== correctAnswerIndex && index !== store.mauvaiseReponseCliqueeIndex) || store.reponsesRetireesIndex.includes(index),
+                  'cursor-pointer transition-all hover:scale-110 hover:shadow-lg': !store.afficherReponseBool && !(store.reponsesRetireesIndex.includes(index)),
+                  'bg-[#007bff] border-white': index === 0 && !store.afficherReponseBool && !(store.reponsesRetireesIndex.includes(index)),
+                  'bg-[#ff1493] border-white': index === 1 && !store.afficherReponseBool && reponses.length == 4 && !(store.reponsesRetireesIndex.includes(index)),
+                  'bg-[#ff6700] border-white': index === 2 && !store.afficherReponseBool && !(store.reponsesRetireesIndex.includes(index)),
+                  'bg-[#32cd32] border-white': (index === 3 || (index === 1 && reponses.length == 2)) && !store.afficherReponseBool && !(store.reponsesRetireesIndex.includes(index)),
+                }" :disabled="store.afficherReponseBool === true || store.reponsesRetireesIndex.includes(index)" v-html="reponse">
               </button>
 
             </li>
@@ -58,27 +58,27 @@
           <!-- Popup indice -->
           <div :class="{
             'hidden': !affichagePopupIndice,
-            'left-100': piecesIndice === 0 || piecesIndice < 3 && reponses.length == 2,
-            'left-96': piecesIndice != 0
+            'left-100': store.piecesIndice === 0 || store.piecesIndice < 3 && reponses.length == 2,
+            'left-96': store.piecesIndice != 0
           }" class="fixed top-48 bg-white rounded-3xl p-4">
 
             <span class="absolute top-1.5 right-4 cursor-pointer text-gray-500 text-4xl"
               @click="masquerPopupIndice">&times;</span>
 
             <!-- Texte popup -->
-            <p class="p-8 pb-4" :class="piecesIndice == 0 || reponses.length == 2 ? 'hidden' : 'block'">Do you want to
+            <p class="p-8 pb-4" :class="store.piecesIndice == 0 || reponses.length == 2 ? 'hidden' : 'block'">Do you want to
               spend a coin to delete a wrong answer?</p>
-            <p class="p-8 pb-4" :class="piecesIndice < 3 || reponses.length == 4 ? 'hidden' : 'block'">Do you want to
+            <p class="p-8 pb-4" :class="store.piecesIndice < 3 || reponses.length == 4 ? 'hidden' : 'block'">Do you want to
               spend <b>3</b> coins to delete a wrong answer?</p>
             <p class="p-8 pb-12"
-              :class="piecesIndice == 0 || piecesIndice < 3 && reponses.length == 2 ? 'bloc' : 'hidden'">Not enough
+              :class="store.piecesIndice == 0 || store.piecesIndice < 3 && reponses.length == 2 ? 'bloc' : 'hidden'">Not enough
               money 😔 <br> Keep playing to buy a hint! 🎮 <br> (Hints for true/false questions cost 3 coins)</p>
             <!-- Boutons oui non -->
             <button @click="depenserIndice"
-              :class="piecesIndice == 0 || piecesIndice < 3 && reponses.length == 2 ? 'hidden' : 'visible'"
+              :class="store.piecesIndice == 0 || store.piecesIndice < 3 && reponses.length == 2 ? 'hidden' : 'visible'"
               class="mb-8 mx-4 text-lg rounded-3xl shadow-md duration-200 ease-linear transform border-2e mt-2 mb-2 font-semibold w-24">Yes</button>
             <button @click="masquerPopupIndice"
-              :class="piecesIndice == 0 || piecesIndice < 3 && reponses.length == 2 ? 'hidden' : 'visible'"
+              :class="store.piecesIndice == 0 || store.piecesIndice < 3 && reponses.length == 2 ? 'hidden' : 'visible'"
               class="mb-8 mx-4 text-lg rounded-3xl shadow-md duration-200 ease-linear transform border-2e mt-2 mb-2 font-semibold w-24">No</button>
 
           </div>
@@ -87,7 +87,7 @@
             <!-- Symbole indice -->
             <div @click="afficherPopupIndice" :class="{
               'hover:bg-blue-700 cursor-pointer transition-all hover:scale-110 hover:shadow-lg': !affichagePopupIndice,
-              'invisible': !affichageBoutonIndice || afficherReponseBool
+              'invisible': !affichageBoutonIndice || store.afficherReponseBool
             }" class=" flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full">
               <img src="/img/idee-ampoule.png" class="h-12" alt="Lightbulb" />
             </div>
@@ -96,7 +96,7 @@
             <div class="flex justify-end">
               <button type="button" @click="questionSuivante"
                 class="rounded-full h-11 w-32 ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                :class="!afficherReponseBool ? 'invisible' : ''">
+                :class="!store.afficherReponseBool ? 'invisible' : ''">
                 Next <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                   class="size-6 inline">
                   <path fill-rule="evenodd"
@@ -149,7 +149,7 @@ const fetchUserInfo = async () => {
       isConnected.value = true;
       username.value = response.data.username;
       avatar.value = `/img/${response.data.avatar}` || "/img/default-avatar.png";
-      piecesIndice.value = response.data.argent;
+      store.piecesIndice = response.data.argent;
     } else {
       isConnected.value = false;
     }
@@ -184,46 +184,38 @@ const difficulteChoisie = store.difficulty;
 const nbQuestionsQuizz = store.nbQuestions;
 const nbQuestionsParAPI = 10; //nombre de tirages de questions a chaque appel API
 
-const question = ref(""); // Question en cours
 const reponses = ref([]); // Reponses en cours
-const piecesIndice = ref(0);
-let nbIndicesDepenses = 0; // nombre d'indices dépensés dans la partie
-let nombreBonneReponses = 0; // permet de calculer le gain des pièces indice
-
-let questionsList; //Liste des questions chargées depuis l'API
-let questionEnCours = 0; //Indice de la question en cours dans la liste
+let question = "";
 
 //Variables conditionnant l'affichage
 let correctAnswerIndex; // l'index du bouton contenant la bonne reponse
-const afficherReponseBool = ref(false);
-const mauvaiseReponseCliqueeIndex = ref(null);
 const affichagePopupIndice = ref(false);
 const affichageBoutonIndice = ref(true);
-const reponsesRetireesIndex = ref([]);
 let selectedReponse = null;
-
-const heartsRemaining = ref(3); //nombre de coeur au début de la partie
 
 // Affiche les images de coeurs en fonction du nombre de vies restantes
 const getHeartImage = (index) => {
-  return index <= heartsRemaining.value ? '/img/full_heart.png' : '/img/transparent_empty_heart.png';
+  return index <= store.heartsRemaining ? '/img/full_heart.png' : '/img/transparent_empty_heart.png';
 };
 
 // Chargement des questions depuis l'API au chargement de la page
 onMounted(async () => {
-  const responseAPI = await axios.get('https://opentdb.com/api.php?amount=' + nbQuestionsParAPI + '&category=' + categorieId + '&difficulty=' + difficulteChoisie);
-  questionsList = responseAPI.data.results;
+  if (store.questionsList.length === 0) {
+    // Charger les questions uniquement si la liste est vide
+    const responseAPI = await axios.get('https://opentdb.com/api.php?amount=' + nbQuestionsParAPI + '&category=' + categorieId + '&difficulty=' + difficulteChoisie);
+    store.questionsList = responseAPI.data.results;
+  }
   majQuestion();
 })
 
 // Affichage des bonnes et mauvaises réponses lorsqu'une réponse est choisie
 const afficherReponse = (_selectedReponse, index) => {
   selectedReponse = _selectedReponse;
-  if (questionsList[questionEnCours].correct_answer != selectedReponse) {
-    mauvaiseReponseCliqueeIndex.value = index;
-    heartsRemaining.value -= 1;
+  if (store.questionsList[store.questionEnCours].correct_answer != selectedReponse) {
+    store.mauvaiseReponseCliqueeIndex = index;
+    store.heartsRemaining -= 1;
   }
-  afficherReponseBool.value = true;
+  store.afficherReponseBool = true;
 }
 
 // Affichage de la popup pour l'utilisation des indices
@@ -240,25 +232,25 @@ const masquerPopupIndice = () => {
 const depenserIndice = async() => {
   affichagePopupIndice.value = false;
   if (reponses.value.length == 2) {
-    piecesIndice.value -= 3;
+    store.piecesIndice -= 3;
   } else {
-    piecesIndice.value -= 1;
+    store.piecesIndice -= 1;
   }
   //tirage au sort d'une mauvaise reponse à retirer
   let tirage = Math.floor(Math.random() * (reponses.value.length));
-  while (tirage == correctAnswerIndex || reponsesRetireesIndex.value.includes(tirage)) {
+  while (tirage == correctAnswerIndex || store.reponsesRetireesIndex.includes(tirage)) {
     tirage = Math.floor(Math.random() * (reponses.value.length));
   }
-  reponsesRetireesIndex.value.push(tirage);
-  if (reponses.value.length == reponsesRetireesIndex.value.length + 1) {
+  store.reponsesRetireesIndex.push(tirage);
+  if (reponses.value.length == store.reponsesRetireesIndex.length + 1) {
     affichageBoutonIndice.value = false;
   }
-  nbIndicesDepenses += 1;
+  store.nbIndicesDepenses += 1;
 
   // Mise à jour en base de données de manière asynchrone
   try {
     await axios.post(`${import.meta.env.VITE_API_URL}/update-indices`, {
-      indices: piecesIndice.value,
+      indices: store.piecesIndice,
     }, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -270,14 +262,17 @@ const depenserIndice = async() => {
 }
 
 //**Watcher** pour surveiller heartsRemaining et rediriger si la valeur atteint 0
-watch(heartsRemaining, (newVal) => {
+watch(
+  () => store.heartsRemaining, // Getter à cause de l'usage du store
+  (newVal) => {
     if (newVal <= 0) {
       store.gameOverReason = 'hearts';
       store.nbQuestionsRight = nbQuestionsQuizz;
       enregistrerPartie();
       router.push('/GameOver');     
+    }
   }
-});
+);
 
 function enregistrerPartie() {
   const token = localStorage.getItem("token");
@@ -290,8 +285,8 @@ function enregistrerPartie() {
       `${import.meta.env.VITE_API_URL}/partie`,
       {
         nbQuestions: nbQuestionsQuizz == Infinity ? -1 : nbQuestionsQuizz,
-        nbBonnesReponses: nombreBonneReponses,
-        nbIndices: nbIndicesDepenses,
+        nbBonnesReponses: store.nombreBonneReponses,
+        nbIndices: store.nbIndicesDepenses,
         categorie: store.categoryName
       },
       {
@@ -306,25 +301,25 @@ function enregistrerPartie() {
 const questionSuivante = async() => {
   affichageBoutonIndice.value = true;
   //incrementation nb bonnes reponses
-  if (questionsList[questionEnCours].correct_answer == selectedReponse && reponsesRetireesIndex.value.length == 0) {
-    nombreBonneReponses += 1;
+  if (store.questionsList[store.questionEnCours].correct_answer == selectedReponse && store.reponsesRetireesIndex.length == 0) {
+    store.nombreBonneReponses += 1;
     let nbIndicesmodifie = false;
     switch (difficulteChoisie) {
       case "easy":
-        if (nombreBonneReponses % 8 == 0) {
-          piecesIndice.value += 1;
+        if (store.nombreBonneReponses % 8 == 0) {
+          store.piecesIndice += 1;
           nbIndicesmodifie = true;
         }
         break;
       case "medium":
-        if (nombreBonneReponses % 5 == 0) {
-          piecesIndice.value += 1;
+        if (store.nombreBonneReponses % 5 == 0) {
+          store.piecesIndice += 1;
           nbIndicesmodifie = true;
         }
         break;
       case "hard":
-        if (nombreBonneReponses % 3 == 0) {
-          piecesIndice.value += 1;
+        if (store.nombreBonneReponses % 3 == 0) {
+          store.piecesIndice += 1;
           nbIndicesmodifie = true;
         }
         break;
@@ -334,7 +329,7 @@ const questionSuivante = async() => {
       // Mise à jour en base de données de manière asynchrone
       try {
         await axios.post(`${import.meta.env.VITE_API_URL}/update-indices`, {
-          indices: piecesIndice.value,
+          indices: store.piecesIndice,
         }, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -346,12 +341,12 @@ const questionSuivante = async() => {
     }
   }
   selectedReponse = null;
-  afficherReponseBool.value = false;
-  reponsesRetireesIndex.value = [];
-  mauvaiseReponseCliqueeIndex.value = null;
-  if (questionEnCours < nbQuestionsQuizz - 1) {
-    questionEnCours += 1;
-    if (questionsList.length == questionEnCours) {
+  store.afficherReponseBool = false;
+  store.reponsesRetireesIndex = [];
+  store.mauvaiseReponseCliqueeIndex = null;
+  if (store.questionEnCours < nbQuestionsQuizz - 1) {
+    store.questionEnCours += 1;
+    if (store.questionsList.length == store.questionEnCours) {
       //on charge les 10 questions suivantes
       await getQuestions();
     } else {
@@ -372,7 +367,7 @@ const getQuestions = async () => {
   const responseAPI = await axios.get('https://opentdb.com/api.php?amount=' + nbQuestionsParAPI + '&category=' + categorieId + '&difficulty=' + difficulteChoisie);
 
   // Ajout des questions à la liste
-  questionsList = questionsList.concat(responseAPI.data.results);
+  store.questionsList = store.questionsList.concat(responseAPI.data.results);
 
   // Mise à jour de l'affichage
   majQuestion();
@@ -380,12 +375,11 @@ const getQuestions = async () => {
 
 // Changement de la question en cours
 function majQuestion() {
-  question.value = questionsList[questionEnCours].question;
+  question = store.questionsList[store.questionEnCours].question;
 
-  const incorrectAnswers = questionsList[questionEnCours].incorrect_answers;
-  const correctAnswer = questionsList[questionEnCours].correct_answer;
+  const incorrectAnswers = store.questionsList[store.questionEnCours].incorrect_answers;
+  const correctAnswer = store.questionsList[store.questionEnCours].correct_answer;
 
-  reponses.value = incorrectAnswers;
   //Tirer au sort le placement de la question correcte
   if (correctAnswer == "True") {
     //on place true en premiere position
@@ -398,6 +392,7 @@ function majQuestion() {
     correctAnswerIndex = Math.floor(Math.random() * (incorrectAnswers.length + 1));
   }
 
+  reponses.value = incorrectAnswers;
   reponses.value.splice(correctAnswerIndex, 0, correctAnswer);
   console.log(correctAnswer); //TODO : penser a enlever
 }

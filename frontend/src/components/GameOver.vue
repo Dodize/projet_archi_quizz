@@ -11,28 +11,28 @@
       
       <!-- Boutons rejouer et retour au menu -->
       <div class="flex justify-center space-x-4 mt-6">
-        <router-link to="/game" class="flex-1 max-w-xs">
-          <button class="w-full px-4 py-2 text-white font-semibold rounded-md bg-[#007bff] hover:bg-blue-600">
+        
+          <button
+            @click="resetStoreRejouer" 
+            class="w-full px-4 py-2 text-white font-semibold rounded-md bg-[#007bff] hover:bg-blue-600">
             Play again (same settings)
           </button>
-        </router-link>
-        <router-link to="/" class="flex-1 max-w-xs">
-          <button class="w-full px-4 py-2 text-white font-semibold rounded-md bg-[#ff1493] hover:bg-pink-600">
+          <button 
+            @click="resetStoreMenu"
+            class="w-full px-4 py-2 text-white font-semibold rounded-md bg-[#ff1493] hover:bg-pink-600">
             Go back to main menu
           </button>
-        </router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { store } from './store.js';
 
-const route = useRoute();
+const router = useRouter();
 
-const nbQuestionsRight = store.nbQuestionsRight;
 const gameOverReason = store.gameOverReason;
 
 // Déterminer le message affiché selon la raison de la fin de partie
@@ -40,6 +40,36 @@ const message =
   gameOverReason === 'hearts'
     ? "The game's over: you've lost all your hearts. Try again to beat your record!"
     : "Congratulations! You've answered all the questions 🎉";
+
+const resetStoreRejouer = () => {
+  resetStore(store.categoryId, store.categoryName, store.difficulty, store.nbQuestions); // Remettre le store à zéro
+  router.push('/game'); // Retour au menu principal
+};
+
+const resetStoreMenu = () => {
+  resetStore('0', 'General Knowledge', '', 0); // Remettre le store à zéro
+  router.push('/'); // Retour au menu principal
+};
+
+// Fonction pour réinitialiser les données et revenir au menu principal
+const resetStore = (id, name, diff, nbQ) => {
+  // Remettre le store à zéro aux valeurs par défaut
+  store.categoryId = id;
+  store.categoryName = name;
+  store.difficulty = diff;
+  store.nbQuestions = nbQ;
+  store.gameOverReason = 'hearts';
+  store.piecesIndice = 0;
+  store.heartsRemaining = 3;
+  store.questionsList = [];
+  store.questionEnCours = 0;
+  store.nombreBonneReponses = 0;
+  store.nbIndicesDepenses = 0;
+  store.reponsesRetireesIndex = [];
+  store.afficherReponseBool = false;
+  store.mauvaiseReponseCliqueeIndex = null;
+}
+
 </script>
 
 <style scoped>

@@ -1,6 +1,14 @@
 <template>
   <div class="flex items-center justify-center min-h-screen">
-    <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+    <div class="absolute w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+      <!-- bouton pour quitter la page -->
+      <button
+        @click="goBack"
+        class="absolute top-2 right-4 flex items-center justify-center w-8 h-8 text-xl text-white bg-blue-500 rounded-full hover:bg-blue-600"
+      >
+        X
+      </button>
+
       <!-- Titre, dépend du mode create an account ou login -->
       <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">
         {{ isRegisterMode ? 'Create an account' : 'Login' }}
@@ -131,6 +139,10 @@ export default {
       this.successMessage = "";
       this.username = "";
       this.password = "";
+    },
+    goBack() {
+      // Retourne à la page précédente
+      this.$router.back();
     },
   },
 };

@@ -1,6 +1,13 @@
 <template>
   <div class="flex justify-center">
-    <div class="flex mt-2.5 bg-boxGrey p-3 py-7 rounded-2xl w-4/6 shadow-2xl h-128 mx-4">
+    <div class="relative flex mt-2.5 bg-boxGrey p-3 py-7 rounded-2xl w-4/6 shadow-2xl h-128 mx-4">
+      <!-- bouton pour quitter la page -->
+      <button
+          @click="goBack"
+          class="absolute top-3 right-4 items-center justify-center w-8 h-8 text-xl text-white bg-blue-500 rounded-full hover:bg-blue-600"
+        >
+          X
+      </button>
       <!-- Menu latéral -->
       <div class="w-1/4 h-full p-4 rounded-l-2xl">
         <ul class="space-y-4">
@@ -338,6 +345,11 @@ const validerChangementAvatar = async () => {
 onMounted(fetchUserInfo);
 
 const router = useRouter();
+
+// Retourne à la page précédente
+const goBack = () => {
+  router.back(); 
+};
 
 // Fonction de déconnexion
 const logout = () => {
