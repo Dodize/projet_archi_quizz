@@ -377,7 +377,7 @@ const getQuestions = async () => {
 function majQuestion() {
   question = store.questionsList[store.questionEnCours].question;
 
-  const incorrectAnswers = store.questionsList[store.questionEnCours].incorrect_answers;
+  const incorrectAnswers = store.questionsList[store.questionEnCours].incorrect_answers.slice();
   const correctAnswer = store.questionsList[store.questionEnCours].correct_answer;
 
   //Tirer au sort le placement de la question correcte
