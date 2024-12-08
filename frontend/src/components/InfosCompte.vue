@@ -4,7 +4,7 @@
       <!-- bouton pour quitter la page -->
       <button
         @click="goBack"
-        class="absolute top-3 right-4 flex items-center justify-center w-10 h-10 rounded-full border border-slate-500"
+        class="absolute top-3 right-8 flex items-center justify-center w-10 h-10 rounded-full border border-slate-500"
       >
         <img 
           src="/img/close.png" 
