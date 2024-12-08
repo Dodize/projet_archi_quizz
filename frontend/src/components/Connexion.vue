@@ -4,9 +4,13 @@
       <!-- bouton pour quitter la page -->
       <button
         @click="goBack"
-        class="absolute top-2 right-4 flex items-center justify-center w-8 h-8 text-xl text-white bg-blue-500 rounded-full hover:bg-blue-600"
+        class="absolute top-3 right-4 flex items-center justify-center w-10 h-10 rounded-full border border-slate-500"
       >
-        X
+        <img 
+          src="/img/close.png" 
+          alt="Close" 
+          class="w-4 h-4 transition-transform transform hover:scale-110"
+        />
       </button>
 
       <!-- Titre, dépend du mode create an account ou login -->
